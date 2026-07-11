@@ -31,8 +31,9 @@ void main() {
 
   tearDown(() => gi.reset());
 
-  testWidgets('未登入 → 顯示 login placeholder，且 shell 不生效(無 NavigationBar)',
-      (tester) async {
+  testWidgets('未登入 → 顯示 login placeholder，且 shell 不生效(無 NavigationBar)', (
+    tester,
+  ) async {
     await setupGetIt();
     await tester.pumpWidget(App(gi: gi));
     await tester.pumpAndSettle();
@@ -41,30 +42,26 @@ void main() {
     expect(find.byType(NavigationBar), findsNothing);
   });
 
-  testWidgets('signIn 後 → 顯示 home placeholder，shell 生效(有 NavigationBar)',
-      (tester) async {
+  testWidgets('signIn 後 → 顯示 home placeholder，shell 生效(有 NavigationBar)', (
+    tester,
+  ) async {
     await setupGetIt();
     await tester.pumpWidget(App(gi: gi));
     await tester.pumpAndSettle();
 
-    await session.signIn(
-      const AuthTokens(accessToken: 'a', refreshToken: 'r'),
-    );
+    await session.signIn(const AuthTokens(accessToken: 'a', refreshToken: 'r'));
     await tester.pumpAndSettle();
 
     expect(find.text('home placeholder'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
   });
 
-  testWidgets('已登入時點擊推播導向 login → 守衛擋回，仍顯示 home',
-      (tester) async {
+  testWidgets('已登入時點擊推播導向 login → 守衛擋回，仍顯示 home', (tester) async {
     await setupGetIt();
     await tester.pumpWidget(App(gi: gi));
     await tester.pumpAndSettle();
 
-    await session.signIn(
-      const AuthTokens(accessToken: 'a', refreshToken: 'r'),
-    );
+    await session.signIn(const AuthTokens(accessToken: 'a', refreshToken: 'r'));
     await tester.pumpAndSettle();
     expect(find.text('home placeholder'), findsOneWidget);
 
@@ -74,8 +71,7 @@ void main() {
     expect(find.text('home placeholder'), findsOneWidget);
   });
 
-  testWidgets('冷啟動點擊(未登入)導向 home → 守衛導回 login，不崩潰',
-      (tester) async {
+  testWidgets('冷啟動點擊(未登入)導向 home → 守衛導回 login，不崩潰', (tester) async {
     await setupGetIt(
       initialTapEvent: const PushTapEvent(routePath: RoutePaths.home),
     );

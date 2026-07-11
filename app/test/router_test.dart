@@ -22,9 +22,8 @@ void main() {
     router = buildRouter(session);
   });
 
-  Future<void> pumpApp(WidgetTester tester) => tester.pumpWidget(
-        MaterialApp.router(routerConfig: router),
-      );
+  Future<void> pumpApp(WidgetTester tester) =>
+      tester.pumpWidget(MaterialApp.router(routerConfig: router));
 
   testWidgets('未登入導向 login', (tester) async {
     await pumpApp(tester);
@@ -35,9 +34,7 @@ void main() {
   testWidgets('signIn 後轉 home;signOut 後回 login', (tester) async {
     await pumpApp(tester);
     await tester.pumpAndSettle();
-    await session.signIn(
-      const AuthTokens(accessToken: 'a', refreshToken: 'r'),
-    );
+    await session.signIn(const AuthTokens(accessToken: 'a', refreshToken: 'r'));
     await tester.pumpAndSettle();
     expect(find.text('home placeholder'), findsOneWidget);
 

@@ -24,9 +24,6 @@ class PlaceholderHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AppPageScaffold(
-      title: 'Home',
-      body: Text('home placeholder'),
-    );
+    return const AppPageScaffold(title: 'Home', body: Text('home placeholder'));
   }
 }

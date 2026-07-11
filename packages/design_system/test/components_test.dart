@@ -42,8 +42,9 @@ void main() {
     expect(find.byType(FilledButton), findsNothing);
   });
 
-  testWidgets('AppErrorView:onRetry 有但 retryLabel 缺 → 不渲染按鈕也不崩潰',
-      (tester) async {
+  testWidgets('AppErrorView:onRetry 有但 retryLabel 缺 → 不渲染按鈕也不崩潰', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _wrap(Scaffold(body: AppErrorView(message: 'x', onRetry: () {}))),
     );

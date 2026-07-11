@@ -23,12 +23,13 @@ Future<void> composeDependencies(GetIt gi, AppConfig config) async {
     ..registerSingleton<BufferingCrashReporter>(BufferingCrashReporter())
     ..registerLazySingleton<CrashReporter>(() => gi<BufferingCrashReporter>())
     ..registerLazySingleton<AppLogger>(
-      () => config.environment == AppEnvironment.prod
-          ? CrashReportingLogger(
-              inner: ConsoleLogger(),
-              reporter: gi<CrashReporter>(),
-            )
-          : ConsoleLogger(),
+      () =>
+          config.environment == AppEnvironment.prod
+              ? CrashReportingLogger(
+                inner: ConsoleLogger(),
+                reporter: gi<CrashReporter>(),
+              )
+              : ConsoleLogger(),
     )
     ..registerSingletonAsync<SharedPreferences>(SharedPreferences.getInstance)
     ..registerLazySingleton<KeyValueStore>(
@@ -57,19 +58,21 @@ Future<void> composeDependencies(GetIt gi, AppConfig config) async {
       ),
     )
     ..registerLazySingleton<AnalyticsTracker>(
-      () => config.firebaseEnabled
-          ? FirebaseAnalyticsTracker(FirebaseAnalytics.instance)
-          : const DisabledAnalyticsTracker(),
+      () =>
+          config.firebaseEnabled
+              ? FirebaseAnalyticsTracker(FirebaseAnalytics.instance)
+              : const DisabledAnalyticsTracker(),
     )
     ..registerLazySingleton<PushNotifications>(
-      () => config.firebaseEnabled
-          ? FcmPushNotifications(
-              messaging: FirebaseMessaging.instance,
-              openedMessages: FirebaseMessaging.onMessageOpenedApp,
-              getInitialMessage: () =>
-                  FirebaseMessaging.instance.getInitialMessage(),
-            )
-          : DisabledPushNotifications(),
+      () =>
+          config.firebaseEnabled
+              ? FcmPushNotifications(
+                messaging: FirebaseMessaging.instance,
+                openedMessages: FirebaseMessaging.onMessageOpenedApp,
+                getInitialMessage:
+                    () => FirebaseMessaging.instance.getInitialMessage(),
+              )
+              : DisabledPushNotifications(),
     );
   // {{feature-registry}} -- tool/new_feature.dart 於此插入 feature 註冊
 }
