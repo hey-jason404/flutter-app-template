@@ -31,6 +31,31 @@ class _SlowCrashReporter implements CrashReporter {
   }
 }
 
+/// 包一層 [FakeCrashReporter],對特定訊息拋錯,其餘照常記錄。
+class _ThrowingOnBadCrashReporter implements CrashReporter {
+  _ThrowingOnBadCrashReporter(this._inner);
+
+  final FakeCrashReporter _inner;
+
+  @override
+  Future<void> recordError(
+    Object error,
+    StackTrace? stackTrace, {
+    bool fatal = false,
+  }) => _inner.recordError(error, stackTrace, fatal: fatal);
+
+  @override
+  Future<void> setUserId(String? userId) => _inner.setUserId(userId);
+
+  @override
+  Future<void> log(String message) async {
+    if (message == 'bad') {
+      throw StateError('boom');
+    }
+    return _inner.log(message);
+  }
+}
+
 void main() {
   test('attach 前緩衝,attach 時依序 flush,之後直通', () async {
     final buffering = BufferingCrashReporter();
@@ -72,5 +97,21 @@ void main() {
     await attachFuture;
 
     expect(fake.logs, ['m1', 'm2', 'during-flush']);
+  });
+
+  test('排水中某筆補送拋錯:不中斷,其餘照送,attach 正常完成', () async {
+    final buffering = BufferingCrashReporter();
+    await buffering.log('m1');
+    await buffering.log('bad');
+    await buffering.log('m2');
+
+    final fake = FakeCrashReporter();
+    final delegate = _ThrowingOnBadCrashReporter(fake);
+
+    await buffering.attach(delegate);
+    expect(fake.logs, ['m1', 'm2']);
+
+    await buffering.log('after');
+    expect(fake.logs, ['m1', 'm2', 'after']);
   });
 }

@@ -11,10 +11,17 @@ class BufferingCrashReporter implements CrashReporter {
   CrashReporter? _delegate;
 
   /// 掛上真正的 reporter;先依序 flush 緩衝(含 flush 期間新到的呼叫),完成後才直通。
+  ///
+  /// 只能呼叫一次。
   Future<void> attach(CrashReporter delegate) async {
+    assert(_delegate == null, 'attach() 只能呼叫一次');
     while (_buffer.isNotEmpty) {
       final replay = _buffer.removeAt(0);
-      await replay(delegate);
+      try {
+        await replay(delegate);
+      } on Object {
+        // 補送失敗不得中斷排水與啟動;上報遺失可接受。
+      }
     }
     _delegate = delegate;
   }
