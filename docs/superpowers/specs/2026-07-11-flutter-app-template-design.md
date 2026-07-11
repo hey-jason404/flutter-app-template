@@ -319,3 +319,8 @@ how-to 以示範 feature 的實際檔案為範例,文件與代碼互相印證。
 20. **§10.11(createDio 擴充)遞延至計畫 5,勿失落**:計畫 4 未吸收。計畫 5 的真實 TokenRefreshGateway 需要「無 AuthInterceptor 的 plain client 工廠」(§10.11c),必須隨 auth feature 一併落地;(a) 額外 interceptors 掛點與 (b) retryClient logging 決策亦於計畫 5 或 6 收斂。
 21. 計畫 5:App 補 go_router `errorBuilder`(推播任意 routePath 落到預設錯誤頁無返回途徑);Plan 5 移除 NavigationBar 佔位 destination 時一併打磨。
 22. 計畫 6:產生器的標記匹配規則定為「行內含 `{{feature-registry}}` / `{{route-paths}}` 即為插入點」(現存標記行有無 ` -- 說明` 後綴不一);`app/README.md` 改寫(現為 flutter create 樣板)。
+
+以下為計畫 5 最終全分支審查後定案的追加事項(全部歸計畫 6):
+
+23. conventions.md 需記載的判準:(a) UI 狀態渲染——整頁三態用 exhaustive switch,單一旗標/副作用允許 `is` 檢查(LoginPage vs HomePage 為對照範例);(b) 測試取用文案一律走 `AppLocalizationsEn()` 等 l10n 實例,不硬編字串;(c) demo repository 省略 `sources/` 層的判準——單一 remote 來源且無本地快取時 repository 可直呼 ApiClient,出現第二來源時抽 source;(d) DTO 手寫 fromJson 的判準(欄位少不值 codegen);(e) widget 測試點擊元件用 `find.byType(AppPrimaryButton)` 等公開元件型別,不耦合內部實作。
+24. 產生器實作規格:標記插入方向統一(定為「插在標記行之前」並修正現存不一致);`DemoBackendAdapter` doc 加 baseUrl 路徑前綴陷阱說明;`main_prod.dart` 加 `useFakeBackend` 顯式註解(prod 靜默走假後端為模板陷阱)。
