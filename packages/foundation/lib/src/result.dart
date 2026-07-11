@@ -4,7 +4,7 @@ import 'package:foundation/src/exceptions.dart';
 /// 成功為 [Success],失敗為 [Failure] 且僅攜帶 [AppException]。
 /// bloc 端以 fold 或 exhaustive switch 消費,禁止 try/catch。
 sealed class Result<T> {
-  /// 建立 Result 實例。
+  /// 基底建構子,僅供子類 super 呼叫。
   const Result();
 
   /// 工廠建構子建立成功結果。

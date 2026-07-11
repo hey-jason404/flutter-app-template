@@ -29,7 +29,7 @@ void main() {
       describe(const NativeException(code: 'CAMERA_DENIED')),
       'native:CAMERA_DENIED',
     );
-    expect(describe(const UnknownException()), 'unknown');
+    expect(describe(const UnknownException(cause: 'boom')), 'unknown');
   });
 
   test('cause 與 stackTrace 可攜帶原始錯誤', () {
@@ -38,5 +38,17 @@ void main() {
     final e = ParsingException(cause: cause, stackTrace: st);
     expect(e.cause, same(cause));
     expect(e.stackTrace, same(st));
+  });
+
+  test('toString 包含類別名稱、欄位與 cause', () {
+    expect(
+      const ServerException(statusCode: 503, cause: 'network down').toString(),
+      'ServerException(statusCode: 503, cause: network down)',
+    );
+    expect(
+      const ApiException(code: 'E001', message: 'bad request').toString(),
+      'ApiException(code: E001, message: bad request)',
+    );
+    expect(const ConnectivityException().toString(), 'ConnectivityException()');
   });
 }

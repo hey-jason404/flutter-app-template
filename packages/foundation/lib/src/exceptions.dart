@@ -19,6 +19,13 @@ sealed class AppException implements Exception {
 final class ConnectivityException extends AppException {
   /// 建立連線失敗例外。
   const ConnectivityException({super.cause, super.stackTrace});
+
+  /// 輸出類別名稱與 [cause](若有)供除錯與記錄使用。
+  @override
+  String toString() =>
+      cause == null
+          ? 'ConnectivityException()'
+          : 'ConnectivityException(cause: $cause)';
 }
 
 /// HTTP 5xx。
@@ -32,12 +39,26 @@ final class ServerException extends AppException {
 
   /// 伺服器回應的 HTTP 狀態碼(5xx)。
   final int statusCode;
+
+  /// 輸出類別名稱、[statusCode] 與 [cause](若有)供除錯與記錄使用。
+  @override
+  String toString() =>
+      cause == null
+          ? 'ServerException(statusCode: $statusCode)'
+          : 'ServerException(statusCode: $statusCode, cause: $cause)';
 }
 
 /// 401,且 token refresh 失敗(觸發 session 過期流程)。
 final class UnauthorizedException extends AppException {
   /// 建立未授權例外。
   const UnauthorizedException({super.cause, super.stackTrace});
+
+  /// 輸出類別名稱與 [cause](若有)供除錯與記錄使用。
+  @override
+  String toString() =>
+      cause == null
+          ? 'UnauthorizedException()'
+          : 'UnauthorizedException(cause: $cause)';
 }
 
 /// HTTP 4xx 業務錯誤,攜帶後端錯誤碼與訊息。
@@ -55,18 +76,35 @@ final class ApiException extends AppException {
 
   /// 後端回傳的錯誤訊息。
   final String message;
+
+  /// 輸出類別名稱、[code]、[message] 與 [cause](若有)供除錯與記錄使用。
+  @override
+  String toString() =>
+      cause == null
+          ? 'ApiException(code: $code, message: $message)'
+          : 'ApiException(code: $code, message: $message, cause: $cause)';
 }
 
 /// JSON 解析或 DTO 轉換失敗。
 final class ParsingException extends AppException {
   /// 建立解析失敗例外。
   const ParsingException({super.cause, super.stackTrace});
+
+  /// 輸出類別名稱與 [cause](若有)供除錯與記錄使用。
+  @override
+  String toString() =>
+      cause == null ? 'ParsingException()' : 'ParsingException(cause: $cause)';
 }
 
 /// 本地儲存讀寫失敗。
 final class StorageException extends AppException {
   /// 建立本地儲存失敗例外。
   const StorageException({super.cause, super.stackTrace});
+
+  /// 輸出類別名稱與 [cause](若有)供除錯與記錄使用。
+  @override
+  String toString() =>
+      cause == null ? 'StorageException()' : 'StorageException(cause: $cause)';
 }
 
 /// 原生能力呼叫失敗,code 為 pigeon 介面定義的錯誤碼。
@@ -76,10 +114,22 @@ final class NativeException extends AppException {
 
   /// pigeon 介面定義的錯誤碼。
   final String code;
+
+  /// 輸出類別名稱、[code] 與 [cause](若有)供除錯與記錄使用。
+  @override
+  String toString() =>
+      cause == null
+          ? 'NativeException(code: $code)'
+          : 'NativeException(code: $code, cause: $cause)';
 }
 
-/// 以上皆非的兜底。出現即代表有未收攏的錯誤來源,應追查 cause。
+/// 以上皆非的兜底。出現即代表有未收攏的錯誤來源,應追查 [cause]。
+/// [cause] 為必填,因為此例外一定是包裝某個未預期的原始錯誤而產生。
 final class UnknownException extends AppException {
-  /// 建立未知錯誤例外。
-  const UnknownException({super.cause, super.stackTrace});
+  /// 建立未知錯誤例外,必須帶入原始錯誤 [cause]。
+  const UnknownException({required Object super.cause, super.stackTrace});
+
+  /// 輸出類別名稱與 [cause] 供除錯與記錄使用。
+  @override
+  String toString() => 'UnknownException(cause: $cause)';
 }

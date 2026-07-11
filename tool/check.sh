@@ -3,6 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+echo "── 0/4 pub get ──"
+fvm flutter pub get
+
 echo "── 1/4 format ──"
 fvm dart format --set-exit-if-changed .
 
