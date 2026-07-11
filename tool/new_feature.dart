@@ -23,7 +23,7 @@ void main(List<String> arguments) {
   final camel = _toCamelCase(name);
 
   try {
-    _generateFeature(name: name, pascal: pascal);
+    _generateFeature(name: name, pascal: pascal, camel: camel);
     _wireRootPubspec(name);
     _wireRoutePaths(name: name, camel: camel);
     _wireAppPubspec(name);
@@ -117,13 +117,21 @@ String _imports(List<String> paths) {
 // Feature 骨架產生
 // ---------------------------------------------------------------------------
 
-void _generateFeature({required String name, required String pascal}) {
+void _generateFeature({
+  required String name,
+  required String pascal,
+  required String camel,
+}) {
   final root = 'features/$name';
   final files = <String, String>{
     '$root/pubspec.yaml': _pubspecTemplate(name),
     '$root/lib/$name.dart': _barrelTemplate(name: name, pascal: pascal),
     '$root/lib/src/di.dart': _diTemplate(name: name, pascal: pascal),
-    '$root/lib/src/routes.dart': _routesTemplate(name: name, pascal: pascal),
+    '$root/lib/src/routes.dart': _routesTemplate(
+      name: name,
+      pascal: pascal,
+      camel: camel,
+    ),
     '$root/lib/src/domain/entities/${name}_entry.dart': _entityTemplate(
       pascal: pascal,
     ),
@@ -226,12 +234,16 @@ void register${pascal}Feature(GetIt gi) {
 }
 ''';
 
-String _routesTemplate({required String name, required String pascal}) => '''
+String _routesTemplate({
+  required String name,
+  required String pascal,
+  required String camel,
+}) => '''
 ${_imports(['go_router/go_router.dart', '$name/src/presentation/pages/${name}_page.dart', 'navigation/navigation.dart'])}
 
 /// $name feature 對外提供的路由(供 app 路由表以 `{{feature-registry}}` 插入)。
-List<RouteBase> ${name}Routes() => [
-  GoRoute(path: RoutePaths.$name, builder: (_, __) => const ${pascal}Page()),
+List<RouteBase> ${camel}Routes() => [
+  GoRoute(path: RoutePaths.$camel, builder: (_, __) => const ${pascal}Page()),
 ];
 ''';
 
@@ -881,8 +893,8 @@ void _printNextSteps({
   stdout
     ..writeln()
     ..writeln('✓ features/$name 已建立並完成接線。後續步驟:')
-    ..writeln('  1. l10n:於 packages/localization 的 ARB 加入 $name 前綴')
-    ..writeln('     的 key(如 ${name}Title、${name}Empty),取代 ${pascal}Page 內的')
+    ..writeln('  1. l10n:於 packages/localization 的 ARB 加入 $camel 前綴')
+    ..writeln('     的 key(如 ${camel}Title、${camel}Empty),取代 ${pascal}Page 內的')
     ..writeln('     暫用字串與 // TODO(l10n) 註解,並 gen-l10n 重新產生。')
     ..writeln('  2. API:將 ${pascal}RepositoryImpl 的 GET /$name/entries 換成真實')
     ..writeln('     後端路徑與欄位(視需要調整 ${pascal}EntryDto)。')
