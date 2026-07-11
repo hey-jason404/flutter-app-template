@@ -1,4 +1,4 @@
-import 'package:auth/src/data/dtos/login_response_dto.dart';
+import 'package:auth/src/data/dtos/auth_tokens_dto.dart';
 import 'package:auth/src/domain/repositories/auth_repository.dart';
 import 'package:foundation/foundation.dart';
 import 'package:networking/networking.dart';
@@ -20,6 +20,6 @@ class AuthRepositoryImpl implements AuthRepository {
     body: {'email': email, 'password': password},
     parse:
         (data) =>
-            LoginResponseDto.fromJson(data as Map<String, dynamic>).toTokens(),
+            AuthTokensDto.fromJson(data as Map<String, dynamic>).toTokens(),
   );
 }

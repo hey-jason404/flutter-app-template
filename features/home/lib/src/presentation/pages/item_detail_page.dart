@@ -8,7 +8,7 @@ import 'package:home/src/presentation/blocs/item_detail/item_detail_state.dart';
 import 'package:localization/localization.dart';
 
 /// 項目詳情頁。
-class ItemDetailPage extends StatefulWidget {
+class ItemDetailPage extends StatelessWidget {
   /// 以項目識別碼 [id] 建立詳情頁。
   const ItemDetailPage({required this.id, super.key});
 
@@ -16,17 +16,10 @@ class ItemDetailPage extends StatefulWidget {
   final String id;
 
   @override
-  State<ItemDetailPage> createState() => _ItemDetailPageState();
-}
-
-class _ItemDetailPageState extends State<ItemDetailPage> {
-  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create:
-          (_) =>
-              GetIt.instance<ItemDetailBloc>()
-                ..add(ItemDetailRequested(widget.id)),
+          (_) => GetIt.instance<ItemDetailBloc>()..add(ItemDetailRequested(id)),
       child: AppPageScaffold(
         title: context.l10n.homeDetailTitle,
         body: BlocBuilder<ItemDetailBloc, ItemDetailState>(
@@ -37,7 +30,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                 message: context.l10n.commonErrorGeneric,
                 onRetry:
                     () => context.read<ItemDetailBloc>().add(
-                      ItemDetailRequested(widget.id),
+                      ItemDetailRequested(id),
                     ),
                 retryLabel: context.l10n.commonRetry,
               ),

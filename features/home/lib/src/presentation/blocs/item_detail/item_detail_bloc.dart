@@ -18,6 +18,7 @@ class ItemDetailBloc extends Bloc<ItemDetailEvent, ItemDetailState> {
     ItemDetailRequested event,
     Emitter<ItemDetailState> emit,
   ) async {
+    emit(const ItemDetailLoading());
     final result = await _repository.fetchItem(event.id);
     result.fold(
       onSuccess: (item) => emit(ItemDetailLoaded(item)),

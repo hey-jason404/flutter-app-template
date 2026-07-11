@@ -1,4 +1,4 @@
-import 'package:auth/src/data/dtos/login_response_dto.dart';
+import 'package:auth/src/data/dtos/auth_tokens_dto.dart';
 import 'package:foundation/foundation.dart';
 import 'package:networking/networking.dart';
 import 'package:session/session.dart';
@@ -21,8 +21,6 @@ class AuthTokenRefreshGateway implements TokenRefreshGateway {
         body: {'refreshToken': refreshToken},
         parse:
             (data) =>
-                LoginResponseDto.fromJson(
-                  data as Map<String, dynamic>,
-                ).toTokens(),
+                AuthTokensDto.fromJson(data as Map<String, dynamic>).toTokens(),
       );
 }

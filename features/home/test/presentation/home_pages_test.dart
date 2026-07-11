@@ -68,13 +68,13 @@ void main() {
     });
 
     testWidgets('Error 顯示重試按鈕，點擊後重新發送請求', (tester) async {
-      when(
-        () => repository.fetchItems(),
-      ).thenAnswer((_) async => const Result.failure(UnauthorizedException()));
+      when(() => repository.fetchItems()).thenAnswer((_) async {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        return const Result.failure(UnauthorizedException());
+      });
 
       await tester.pumpWidget(_homeApp());
-      await tester.pump();
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.text('Something went wrong. Please try again.'),
@@ -84,7 +84,10 @@ void main() {
 
       await tester.tap(find.text('Retry'));
       await tester.pump();
-      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      await tester.pumpAndSettle();
 
       verify(() => repository.fetchItems()).called(2);
     });
@@ -133,13 +136,13 @@ void main() {
     });
 
     testWidgets('Error 顯示重試按鈕，點擊後重新發送請求', (tester) async {
-      when(
-        () => repository.fetchItem('1'),
-      ).thenAnswer((_) async => const Result.failure(UnauthorizedException()));
+      when(() => repository.fetchItem('1')).thenAnswer((_) async {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        return const Result.failure(UnauthorizedException());
+      });
 
       await tester.pumpWidget(_detailApp());
-      await tester.pump();
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.text('Something went wrong. Please try again.'),
@@ -149,7 +152,10 @@ void main() {
 
       await tester.tap(find.text('Retry'));
       await tester.pump();
-      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      await tester.pumpAndSettle();
 
       verify(() => repository.fetchItem('1')).called(2);
     });

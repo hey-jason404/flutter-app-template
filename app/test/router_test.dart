@@ -75,4 +75,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(LoginPage), findsOneWidget);
   });
+
+  testWidgets('已登入時導向不存在路由 → 錯誤頁;點回首頁按鈕 → home', (tester) async {
+    await pumpApp(tester);
+    await tester.pumpAndSettle();
+    await session.signIn(const AuthTokens(accessToken: 'a', refreshToken: 'r'));
+    await tester.pumpAndSettle();
+    expect(find.byType(HomePage), findsOneWidget);
+
+    router.go('/no/such/route');
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byType(Scaffold));
+    expect(find.text(context.l10n.commonErrorGeneric), findsOneWidget);
+
+    await tester.tap(find.text(context.l10n.homeTitle));
+    await tester.pumpAndSettle();
+    expect(find.byType(HomePage), findsOneWidget);
+  });
 }

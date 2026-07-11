@@ -18,6 +18,7 @@ class ItemListBloc extends Bloc<ItemListEvent, ItemListState> {
     ItemListRequested event,
     Emitter<ItemListState> emit,
   ) async {
+    emit(const ItemListLoading());
     final result = await _repository.fetchItems();
     result.fold(
       onSuccess: (items) => emit(ItemListLoaded(items)),

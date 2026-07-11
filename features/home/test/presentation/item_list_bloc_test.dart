@@ -41,7 +41,10 @@ void main() {
       build: () => ItemListBloc(repository: repository),
       act: (bloc) => bloc.add(const ItemListRequested()),
       expect:
-          () => [isA<ItemListLoaded>().having((s) => s.items, 'items', items)],
+          () => [
+            isA<ItemListLoading>(),
+            isA<ItemListLoaded>().having((s) => s.items, 'items', items),
+          ],
     );
 
     blocTest<ItemListBloc, ItemListState>(
@@ -56,6 +59,7 @@ void main() {
       act: (bloc) => bloc.add(const ItemListRequested()),
       expect:
           () => [
+            isA<ItemListLoading>(),
             isA<ItemListError>().having(
               (s) => s.exception,
               'exception',

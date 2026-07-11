@@ -1,4 +1,5 @@
 import 'package:navigation/src/app_route.dart';
+import 'package:navigation/src/route_paths.dart';
 
 /// 導向項目詳情頁。
 class ItemDetailRoute implements AppRoute {
@@ -9,5 +10,5 @@ class ItemDetailRoute implements AppRoute {
   final String id;
 
   @override
-  String get location => '/home/items/$id';
+  String get location => RoutePaths.homeItemDetail.replaceFirst(':id', id);
 }

@@ -1,5 +1,5 @@
 name: home
-description: 首頁功能:domain/data 層。
+description: 首頁功能:domain/data/presentation 層(項目清單與詳情頁、blocs)。
 publish_to: none
 resolution: workspace
 

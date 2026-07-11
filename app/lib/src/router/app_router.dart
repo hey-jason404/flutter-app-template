@@ -2,7 +2,7 @@ import 'package:app/src/router/session_refresh_listenable.dart';
 import 'package:app/src/shell/app_shell.dart';
 import 'package:auth/auth.dart';
 import 'package:design_system/design_system.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home/home.dart';
 import 'package:localization/localization.dart';
@@ -36,10 +36,12 @@ GoRouter buildRouter(SessionManager session, {Listenable? refreshListenable}) {
       return null;
     },
     errorBuilder:
-        (context, state) => AppErrorView(
-          message: context.l10n.commonErrorGeneric,
-          onRetry: () => context.go(RoutePaths.home),
-          retryLabel: context.l10n.homeTitle,
+        (context, state) => Scaffold(
+          body: AppErrorView(
+            message: context.l10n.commonErrorGeneric,
+            onRetry: () => context.go(RoutePaths.home),
+            retryLabel: context.l10n.homeTitle,
+          ),
         ),
     routes: [
       ...authRoutes(),

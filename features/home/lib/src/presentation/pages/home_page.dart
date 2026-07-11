@@ -10,15 +10,10 @@ import 'package:localization/localization.dart';
 import 'package:navigation/navigation.dart';
 
 /// 首頁:項目清單。
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   /// 建立首頁。
   const HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
