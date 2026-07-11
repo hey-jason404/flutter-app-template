@@ -270,6 +270,9 @@ git diff --stat
 
 還原(練習完先不留著,後面練習不依賴它):
 
+> ⚠️ `git checkout -- .` 會丟棄**整個工作樹**所有未 commit 的修改。執行前先跑
+> `git status` 確認除了練習產物外沒有其他 WIP;本文件後續的還原指令同此提醒。
+
 ```bash
 git checkout -- . && rm -rf features/practice && fvm flutter pub get
 ```
