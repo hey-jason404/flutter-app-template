@@ -88,8 +88,8 @@ void main() {
     final withMessage = FcmPushNotifications(
       messaging: messaging,
       openedMessages: opened.stream,
-      getInitialMessage:
-          () async => const RemoteMessage(data: {'route': '/home'}),
+      getInitialMessage: () async =>
+          const RemoteMessage(data: {'route': '/home'}),
       foregroundRemoteMessages: foreground.stream,
     );
     final tap = await withMessage.initialTap();
@@ -108,8 +108,8 @@ void main() {
     final push = FcmPushNotifications(
       messaging: messaging,
       openedMessages: opened.stream,
-      getInitialMessage:
-          () async => const RemoteMessage(data: {'route': 123, 'k': 'v'}),
+      getInitialMessage: () async =>
+          const RemoteMessage(data: {'route': 123, 'k': 'v'}),
       foregroundRemoteMessages: foreground.stream,
     );
     final tap = await push.initialTap();

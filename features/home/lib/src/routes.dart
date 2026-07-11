@@ -7,7 +7,7 @@ import 'package:navigation/navigation.dart';
 List<RouteBase> homeRoutes() => [
   GoRoute(
     path: RoutePaths.home,
-    builder: (_, __) => const HomePage(),
+    builder: (_, _) => const HomePage(),
     routes: [
       GoRoute(
         path: 'items/:id',

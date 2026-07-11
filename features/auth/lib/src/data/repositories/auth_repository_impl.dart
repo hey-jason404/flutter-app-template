@@ -18,8 +18,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) => _client.post<AuthTokens>(
     '/auth/login',
     body: {'email': email, 'password': password},
-    parse:
-        (data) =>
-            AuthTokensDto.fromJson(data as Map<String, dynamic>).toTokens(),
+    parse: (data) =>
+        AuthTokensDto.fromJson(data as Map<String, dynamic>).toTokens(),
   );
 }

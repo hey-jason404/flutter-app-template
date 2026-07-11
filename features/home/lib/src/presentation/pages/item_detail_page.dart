@@ -18,8 +18,8 @@ class ItemDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (_) => GetIt.instance<ItemDetailBloc>()..add(ItemDetailRequested(id)),
+      create: (_) =>
+          GetIt.instance<ItemDetailBloc>()..add(ItemDetailRequested(id)),
       child: AppPageScaffold(
         title: context.l10n.homeDetailTitle,
         body: BlocBuilder<ItemDetailBloc, ItemDetailState>(
@@ -28,10 +28,8 @@ class ItemDetailPage extends StatelessWidget {
               ItemDetailLoading() => const AppLoadingIndicator(),
               ItemDetailError() => AppErrorView(
                 message: context.l10n.commonErrorGeneric,
-                onRetry:
-                    () => context.read<ItemDetailBloc>().add(
-                      ItemDetailRequested(id),
-                    ),
+                onRetry: () =>
+                    context.read<ItemDetailBloc>().add(ItemDetailRequested(id)),
                 retryLabel: context.l10n.commonRetry,
               ),
               ItemDetailLoaded(:final item) => Padding(

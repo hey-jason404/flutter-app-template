@@ -43,9 +43,8 @@ void main() {
         );
       },
       build: () => LoginBloc(repository: repository, session: session),
-      act:
-          (bloc) =>
-              bloc.add(const LoginSubmitted(email: 'a@b.com', password: 'pw')),
+      act: (bloc) =>
+          bloc.add(const LoginSubmitted(email: 'a@b.com', password: 'pw')),
       expect: () => const [LoginSubmitting(), LoginSuccess()],
       verify: (_) {
         expect(session.state, isA<SessionAuthenticated>());
@@ -64,19 +63,16 @@ void main() {
         );
       },
       build: () => LoginBloc(repository: repository, session: session),
-      act:
-          (bloc) => bloc.add(
-            const LoginSubmitted(email: 'a@b.com', password: 'wrong'),
-          ),
-      expect:
-          () => [
-            const LoginSubmitting(),
-            isA<LoginFailure>().having(
-              (s) => s.exception,
-              'exception',
-              isA<UnauthorizedException>(),
-            ),
-          ],
+      act: (bloc) =>
+          bloc.add(const LoginSubmitted(email: 'a@b.com', password: 'wrong')),
+      expect: () => [
+        const LoginSubmitting(),
+        isA<LoginFailure>().having(
+          (s) => s.exception,
+          'exception',
+          isA<UnauthorizedException>(),
+        ),
+      ],
       verify: (_) {
         expect(session.state, isA<SessionUnauthenticated>());
       },

@@ -35,14 +35,13 @@ GoRouter buildRouter(SessionManager session, {Listenable? refreshListenable}) {
       }
       return null;
     },
-    errorBuilder:
-        (context, state) => Scaffold(
-          body: AppErrorView(
-            message: context.l10n.commonErrorGeneric,
-            onRetry: () => context.go(RoutePaths.home),
-            retryLabel: context.l10n.homeTitle,
-          ),
-        ),
+    errorBuilder: (context, state) => Scaffold(
+      body: AppErrorView(
+        message: context.l10n.commonErrorGeneric,
+        onRetry: () => context.go(RoutePaths.home),
+        retryLabel: context.l10n.homeTitle,
+      ),
+    ),
     routes: [
       ...authRoutes(),
       ShellRoute(

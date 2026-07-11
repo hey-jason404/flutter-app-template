@@ -12,14 +12,13 @@ DioException _dioError({
   return DioException(
     requestOptions: options,
     type: type,
-    response:
-        statusCode == null
-            ? null
-            : Response<Object?>(
-              requestOptions: options,
-              statusCode: statusCode,
-              data: body,
-            ),
+    response: statusCode == null
+        ? null
+        : Response<Object?>(
+            requestOptions: options,
+            statusCode: statusCode,
+            data: body,
+          ),
   );
 }
 

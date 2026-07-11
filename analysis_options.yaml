@@ -9,3 +9,12 @@ analyzer:
     depend_on_referenced_packages: error
   exclude:
     - "**/src/generated/**"
+
+linter:
+  rules:
+    # Dart 3.12 / analyzer 12 起,此規則對「私有欄位 + 具名建構子公開參數採可讀名稱」
+    # (本模板一貫慣例,例如 `required AuthRepository repository` 賦值給 `_repository`)
+    # 也會誤報建議改成 initializing formal;然而具名參數不得以底線開頭
+    # (`A named parameter can't start with an underscore`),故該建議實際上無法套用、
+    # 套用即編譯失敗。全專案 17 處皆屬此類,經確認為新版 analyzer 的誤報,停用此規則。
+    prefer_initializing_formals: false
