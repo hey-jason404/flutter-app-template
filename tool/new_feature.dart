@@ -246,7 +246,7 @@ ${_imports(['go_router/go_router.dart', '$name/src/presentation/pages/${name}_pa
 
 /// $name feature 對外提供的路由(供 app 路由表以 `{{feature-registry}}` 插入)。
 List<RouteBase> ${camel}Routes() => [
-  GoRoute(path: RoutePaths.$camel, builder: (_, __) => const ${pascal}Page()),
+  GoRoute(path: RoutePaths.$camel, builder: (_, _) => const ${pascal}Page()),
 ];
 ''';
 
