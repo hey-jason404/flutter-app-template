@@ -94,7 +94,7 @@ feature 骨架並自動接線,對應程式碼見
    ```
 
    這會重新產生 `lib/src/generated/`(`AppLocalizations`、
-   `AppLocalizationsEn` 等)。`tool/check.sh` 第 4 步會做「l10n 漂移檢查」
+   `AppLocalizationsEn` 等)。`tool/check.sh` 第 5 步會做「l10n 漂移檢查」
    (ARB 改了卻忘記 regen 即 CI 失敗),見
    [`tool/check.sh`](../../tool/check.sh)。
 3. 頁面內 `context.l10n.<key>` 取用(擴充方法定義於

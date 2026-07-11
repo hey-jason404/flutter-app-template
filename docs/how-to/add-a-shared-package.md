@@ -87,7 +87,7 @@ export 'src/testing/fake_<thing>.dart';
 3. §2.2 的 mermaid 依賴圖加對應的邊。
 
 這是文件層面的登記;實際邊界由 `depend_on_referenced_packages` error 級
-lint + `tool/check.sh` 第 3 步的 pubspec 依賴稽核機器強制(見
+lint + `tool/check.sh` 第 4 步的 pubspec 依賴稽核機器強制(見
 [`architecture.md` §2](../architecture.md))——`packages/*` 之間允許依賴但
 必須單向,永遠不能依賴 `features/*` 或 `app`;`features/*` 永遠不能依賴其他
 `features/*`。若新 package 打算被 `features/*` 依賴,反向(`packages/* →
@@ -99,5 +99,5 @@ features/*`)一律禁止,`check.sh` 會擋下。
 ./tool/check.sh
 ```
 
-第 3 步的依賴稽核與第 5 步的 `flutter analyze` 會驗證新 package 沒有違反
-依賴方向;若該 package 有 `test/` 目錄,第 6 步會自動納入逐 package 測試。
+第 4 步的依賴稽核與第 6 步的 `flutter analyze` 會驗證新 package 沒有違反
+依賴方向;若該 package 有 `test/` 目錄,第 7 步會自動納入逐 package 測試。

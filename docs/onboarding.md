@@ -339,9 +339,9 @@ features/home/lib/src/domain/entities/item.dart:17:  // ignore: unused_field
 `generated/` 一起 commit,這裡就會抓到差異。還原:
 `git checkout -- packages/localization/lib/src/arb/app_en.arb packages/localization/lib/src/generated/`。
 
-> **注意**:此護欄實際落在 `check.sh` 的**第 5/7 步**(l10n 漂移檢查),不
->是文件草稿常誤植的「第 4 步」——本文件已依實測結果訂正,若之後看到其他
-> 文件寫「第 4 步」屬歷史用詞,以本文件與 `tool/check.sh` 原始碼為準。
+> **注意**:此護欄落在 `check.sh` 的**第 5/7 步**(l10n 漂移檢查),為實測
+> 確認的段落編號;全庫文件引用 `check.sh` 段落編號時,一律以
+> `tool/check.sh` 原始碼現況(0/7~7/7)為唯一真相。
 
 #### (c) feature 互依(不實測,引用腳本行為)
 
@@ -358,8 +358,8 @@ features/practice/pubspec.yaml:   home:
 
 （訊息格式節錄自 `tool/check.sh` 的 `dep_violations` 組字邏輯；`3/7` 步是
 `tool/guard.sh`「護欄稽核」，稽核的是 `analysis_options.yaml`/產生器標記/
-`.fvmrc` 本身有沒有被削弱，不是這條依賴規則——依賴四規則的機器強制真正落
-在 4/7。此為本文件依原始碼訂正之處。）
+`.fvmrc` 本身有沒有被削弱，不是這條依賴規則——依賴四規則的機器強制落在
+4/7。）
 
 #### (d) 直推 `develop`(不實測,引用 ruleset 行為描述)
 
