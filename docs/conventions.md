@@ -221,7 +221,7 @@ factory ItemDto.fromJson(Map<String, dynamic> json) => ItemDto(
 
 ### 8.2 測試文案(規格 §10.23b)
 
-測試斷言文案走 `AppLocalizations` 的具體語系實例(如 `AppLocalizationsEn()`,見 [`packages/localization/lib/src/generated/app_localizations_en.dart`](../packages/localization/lib/src/generated/app_localizations_en.dart)),不硬編字串常數,避免文案改動時兩處失同步。現有示範測試(如 `home_pages_test.dart`)以英文預設語系直接斷言可讀文案字串(如 `'Something went wrong. Please try again.'`),對應 ARB key 為 `commonErrorGeneric`(見 [`packages/localization/lib/src/arb/app_en.arb`](../packages/localization/lib/src/arb/app_en.arb));新增測試時優先改走 `AppLocalizationsEn().commonErrorGeneric` 取代硬編字串。
+測試斷言文案走 `AppLocalizations` 的具體語系實例(如 `AppLocalizationsEn()`,見 [`packages/localization/lib/src/generated/app_localizations_en.dart`](../packages/localization/lib/src/generated/app_localizations_en.dart)),不硬編字串常數,避免文案改動時兩處失同步。已統一走 `AppLocalizationsEn` 取值:[`app/test/app_flow_test.dart`](../app/test/app_flow_test.dart) 的 SnackBar 斷言用 `AppLocalizationsEn().authLoginFailed`;[`features/auth/test/presentation/login_page_test.dart`](../features/auth/test/presentation/login_page_test.dart) 同式樣;[`features/home/test/presentation/home_pages_test.dart`](../features/home/test/presentation/home_pages_test.dart) 以模組層級 `final _l10n = AppLocalizationsEn();` 取代 `'Something went wrong. Please try again.'`/`'Retry'`/`'No items yet.'` 等硬編字串,分別對應 ARB key `commonErrorGeneric`/`commonRetry`/`homeEmpty`(見 [`packages/localization/lib/src/arb/app_en.arb`](../packages/localization/lib/src/arb/app_en.arb))。`AppLocalizationsEn` 未由 `package:localization/localization.dart` 匯出,測試檔一律直接 `import 'package:localization/src/generated/app_localizations_en.dart';` 取用。
 
 ### 8.3 元件選取器(規格 §10.23e)
 

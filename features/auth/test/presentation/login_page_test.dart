@@ -1,12 +1,14 @@
 import 'package:auth/src/domain/repositories/auth_repository.dart';
 import 'package:auth/src/presentation/blocs/login/login_bloc.dart';
 import 'package:auth/src/presentation/pages/login_page.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:foundation/foundation.dart';
 import 'package:foundation/testing.dart';
 import 'package:get_it/get_it.dart';
 import 'package:localization/localization.dart';
+import 'package:localization/src/generated/app_localizations_en.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:persistence/testing.dart';
 import 'package:session/session.dart';
@@ -54,7 +56,7 @@ void main() {
       'a@b.com',
     );
     await tester.enterText(find.byKey(const Key('login_password_field')), 'pw');
-    await tester.tap(find.byType(FilledButton));
+    await tester.tap(find.byType(AppPrimaryButton));
     await tester.pump();
 
     verify(() => repository.login(email: 'a@b.com', password: 'pw')).called(1);
@@ -76,7 +78,7 @@ void main() {
       'a@b.com',
     );
     await tester.enterText(find.byKey(const Key('login_password_field')), 'pw');
-    await tester.tap(find.byType(FilledButton));
+    await tester.tap(find.byType(AppPrimaryButton));
     await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -98,13 +100,10 @@ void main() {
       find.byKey(const Key('login_password_field')),
       'wrong',
     );
-    await tester.tap(find.byType(FilledButton));
+    await tester.tap(find.byType(AppPrimaryButton));
     await tester.pump();
     await tester.pump();
 
-    expect(
-      find.text('Sign-in failed. Check your credentials.'),
-      findsOneWidget,
-    );
+    expect(find.text(AppLocalizationsEn().authLoginFailed), findsOneWidget);
   });
 }

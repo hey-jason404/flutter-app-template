@@ -14,6 +14,16 @@ import 'package:dio/dio.dart';
 /// - `GET /items` → 200 `{items:[...5 筆...]}`。
 /// - `GET /items/<id>` → 200 單品;不存在 → 404 `{code:'NOT_FOUND', message:''}`。
 /// - 未知路徑一律 404;不驗證 `Authorization` header(假後端不做授權檢查)。
+///
+/// **`baseUrl` 路徑前綴陷阱**:上述路徑比對(`path == '/items'`、
+/// `path.startsWith('/items/')` 等)是對 `options.uri.path` 的**精確字串**
+/// 比對,不做尾段/後綴匹配。若 `AppConfig.apiBaseUrl`(見
+/// `app/lib/src/config/app_config.dart`)帶有路徑片段(如
+/// `https://api.example.com/v1`),dio 組出的實際請求路徑會變成
+/// `/v1/items`,不再等於這裡寫死的 `/items`,所有分支都會落到未知路徑的
+/// 404,且不會有任何錯誤訊息提示——排查時容易誤以為是後端契約或
+/// `ItemDto` 解析出錯。**`apiBaseUrl` 搭配假後端使用時務必只放
+/// scheme+host(不帶路徑),** 或改寫本檔的路徑比對邏輯以支援前綴。
 class DemoBackendAdapter implements HttpClientAdapter {
   /// 建立假後端 adapter;[latency] 模擬每個請求的網路延遲。
   DemoBackendAdapter({this.latency = const Duration(milliseconds: 300)});

@@ -9,9 +9,12 @@ import 'package:home/src/presentation/blocs/item_list/item_list_bloc.dart';
 import 'package:home/src/presentation/pages/home_page.dart';
 import 'package:home/src/presentation/pages/item_detail_page.dart';
 import 'package:localization/localization.dart';
+import 'package:localization/src/generated/app_localizations_en.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockItemRepository extends Mock implements ItemRepository {}
+
+final _l10n = AppLocalizationsEn();
 
 const _items = [
   Item(id: '1', title: 't1', description: 'd1'),
@@ -76,13 +79,10 @@ void main() {
       await tester.pumpWidget(_homeApp());
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('Something went wrong. Please try again.'),
-        findsOneWidget,
-      );
-      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text(_l10n.commonErrorGeneric), findsOneWidget);
+      expect(find.text(_l10n.commonRetry), findsOneWidget);
 
-      await tester.tap(find.text('Retry'));
+      await tester.tap(find.text(_l10n.commonRetry));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -114,7 +114,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.text('No items yet.'), findsOneWidget);
+      expect(find.text(_l10n.homeEmpty), findsOneWidget);
     });
   });
 
@@ -144,13 +144,10 @@ void main() {
       await tester.pumpWidget(_detailApp());
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('Something went wrong. Please try again.'),
-        findsOneWidget,
-      );
-      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text(_l10n.commonErrorGeneric), findsOneWidget);
+      expect(find.text(_l10n.commonRetry), findsOneWidget);
 
-      await tester.tap(find.text('Retry'));
+      await tester.tap(find.text(_l10n.commonRetry));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
