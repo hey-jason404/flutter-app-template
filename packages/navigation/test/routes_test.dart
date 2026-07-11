@@ -8,6 +8,11 @@ void main() {
     expect(const LoginRoute(), isA<AppRoute>());
   });
 
+  test('ItemDetailRoute 的 location 帶入 id', () {
+    expect(const ItemDetailRoute('42').location, '/home/items/42');
+    expect(const ItemDetailRoute('42'), isA<AppRoute>());
+  });
+
   test('buildLocation 無 query 時回傳原路徑', () {
     expect(buildLocation('/items'), '/items');
   });

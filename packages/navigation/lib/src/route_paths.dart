@@ -6,5 +6,8 @@ abstract final class RoutePaths {
   /// 首頁。
   static const home = '/home';
 
+  /// 首頁項目詳情。
+  static const homeItemDetail = '/home/items/:id';
+
   // {{route-paths}} -- tool/new_feature.dart 於此插入新 feature 的路徑常數
 }
