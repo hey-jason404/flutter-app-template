@@ -17,6 +17,8 @@ class AppConfig {
     required this.environment,
     required this.apiBaseUrl,
     this.firebaseEnabled = false,
+    this.useFakeBackend = true,
+    this.demoBackendLatency = const Duration(milliseconds: 300),
   });
 
   /// 目前執行環境。
@@ -27,4 +29,12 @@ class AppConfig {
 
   /// 是否啟用 Firebase;出廠預設 false,待專案設定 Firebase 專案後再改為 true。
   final bool firebaseEnabled;
+
+  /// 是否使用內建假後端(`DemoBackendAdapter`)取代真實網路請求。
+  ///
+  /// 出廠預設 true,讓範本開箱即可跑;接上真後端後改為 false。
+  final bool useFakeBackend;
+
+  /// 假後端模擬的每個請求延遲;僅在 [useFakeBackend] 為 true 時生效。
+  final Duration demoBackendLatency;
 }

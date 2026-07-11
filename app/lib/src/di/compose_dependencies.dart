@@ -1,11 +1,13 @@
 import 'package:app/src/config/app_config.dart';
+import 'package:app/src/demo/demo_backend_adapter.dart';
 import 'package:app/src/di/disabled_services.dart';
-import 'package:app/src/di/placeholder_token_refresh_gateway.dart';
+import 'package:auth/auth.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:foundation/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home/home.dart';
 import 'package:networking/networking.dart';
 import 'package:observability/observability.dart';
 import 'package:persistence/persistence.dart';
@@ -17,7 +19,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// Firebase 相關一律 lazy 注册，未啟用（`config.firebaseEnabled == false`）
 /// 時不會觸碰 Firebase API。
-Future<void> composeDependencies(GetIt gi, AppConfig config) async {
+///
+/// [secureStoreOverride] 僅供測試注入(取代真實 `flutter_secure_storage`
+/// plugin——測試環境無平台實作,直接呼叫會丟例外);正式啟動一律傳 null,
+/// 走 [SecureStorageStore]。
+Future<void> composeDependencies(
+  GetIt gi,
+  AppConfig config, {
+  SecureStore? secureStoreOverride,
+}) async {
+  final adapter =
+      config.useFakeBackend
+          ? DemoBackendAdapter(latency: config.demoBackendLatency)
+          : null;
   gi
     ..registerSingleton<AppConfig>(config)
     ..registerSingleton<BufferingCrashReporter>(BufferingCrashReporter())
@@ -36,10 +50,19 @@ Future<void> composeDependencies(GetIt gi, AppConfig config) async {
       () => SharedPreferencesStore(gi<SharedPreferences>()),
     )
     ..registerLazySingleton<SecureStore>(
-      () => SecureStorageStore(const FlutterSecureStorage()),
+      () =>
+          secureStoreOverride ??
+          SecureStorageStore(const FlutterSecureStorage()),
     )
     ..registerLazySingleton<TokenRefreshGateway>(
-      PlaceholderTokenRefreshGateway.new, // Plan 5 auth feature 取代
+      () => AuthTokenRefreshGateway(
+        ApiClient(
+          createPlainDio(
+            config: NetworkingConfig(baseUrl: config.apiBaseUrl),
+            adapter: adapter,
+          ),
+        ),
+      ),
     )
     ..registerLazySingleton<SessionManager>(
       () => SessionManager(
@@ -54,6 +77,7 @@ Future<void> composeDependencies(GetIt gi, AppConfig config) async {
         createDio(
           config: NetworkingConfig(baseUrl: config.apiBaseUrl),
           tokenProvider: gi<TokenProvider>(),
+          adapter: adapter,
         ),
       ),
     )
@@ -75,4 +99,6 @@ Future<void> composeDependencies(GetIt gi, AppConfig config) async {
               : const DisabledPushNotifications(),
     );
   // {{feature-registry}} -- tool/new_feature.dart 於此插入 feature 註冊
+  registerAuthFeature(gi);
+  registerHomeFeature(gi);
 }

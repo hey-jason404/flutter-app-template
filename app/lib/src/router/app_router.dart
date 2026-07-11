@@ -1,8 +1,11 @@
-import 'package:app/src/pages/placeholder_pages.dart';
 import 'package:app/src/router/session_refresh_listenable.dart';
 import 'package:app/src/shell/app_shell.dart';
+import 'package:auth/auth.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home/home.dart';
+import 'package:localization/localization.dart';
 import 'package:navigation/navigation.dart';
 import 'package:session/session.dart';
 
@@ -32,18 +35,18 @@ GoRouter buildRouter(SessionManager session, {Listenable? refreshListenable}) {
       }
       return null;
     },
+    errorBuilder:
+        (context, state) => AppErrorView(
+          message: context.l10n.commonErrorGeneric,
+          onRetry: () => context.go(RoutePaths.home),
+          retryLabel: context.l10n.homeTitle,
+        ),
     routes: [
-      GoRoute(
-        path: RoutePaths.login,
-        builder: (context, state) => const PlaceholderLoginPage(),
-      ),
+      ...authRoutes(),
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
         routes: [
-          GoRoute(
-            path: RoutePaths.home,
-            builder: (context, state) => const PlaceholderHomePage(),
-          ),
+          ...homeRoutes(),
           // {{feature-registry}}
         ],
       ),
