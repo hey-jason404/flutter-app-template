@@ -36,6 +36,8 @@ fvm flutter run -t app/lib/main_stg.dart
 fvm flutter run -t app/lib/main_prod.dart
 ```
 
+新成員入門:[docs/onboarding.md](docs/onboarding.md)(約兩天的學習歷程)
+
 ## 用作專案起點:改名
 
 模板出廠時 Android/iOS 識別碼為 `com.example.template.app`。用
@@ -73,6 +75,7 @@ docs/                 # 架構文件、how-to、ADR
 
 ## 文件索引
 
+- [`docs/onboarding.md`](docs/onboarding.md) — 新成員入門課綱:約兩天的學習歷程,從先體驗到動手做故意犯規。
 - [`CLAUDE.md`](CLAUDE.md) — AI agent 快速定位:鐵律、任務路由、指令清單。
 - [`docs/architecture.md`](docs/architecture.md) — workspace 拓撲、依賴方向、關鍵鏈路。
 - [`docs/conventions.md`](docs/conventions.md) — 命名、Bloc 規範、測試規範、完成的定義。

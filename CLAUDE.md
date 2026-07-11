@@ -10,7 +10,7 @@
 1. **依賴四規則**(`docs/architecture.md` §2):`foundation` 零依賴;
    `packages/*` 間單向依賴且列在依賴圖,永遠不依賴 `features/*`/`app`;
    `features/*` 可依賴 `packages/*`/`foundation`,永遠不依賴其他 feature
-   或 `app`;`app` 什麼都能依賴,自身幾乎不含邏輯。`tool/check.sh` 第 3 步
+   或 `app`;`app` 什麼都能依賴,自身幾乎不含邏輯。`tool/check.sh` 第 4 步
    機器強制,違規 CI 失敗。
 2. **一律 Bloc,不用 Cubit**;State 用 `sealed class`,UI 用 exhaustive
    `switch` 渲染整頁三態(單一旗標/副作用可用 `is`);Bloc 之間禁止互相
