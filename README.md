@@ -91,3 +91,7 @@ docs/                 # 架構文件、how-to、ADR
 
 - Flutter **3.29.3**(見 [`.fvmrc`](.fvmrc)),用 [FVM](https://fvm.app/) 管理版本。
 - Dart SDK ^3.7.0(隨 Flutter 3.29.3 附帶)。
+
+## License
+
+[MIT](LICENSE)

@@ -17,7 +17,7 @@
 - 例外不實作 `==`;測試斷言例外一律用 `isA<XxxException>()`(spec §10 第 7 條)。
 - foundation 既有 API(直接使用,不得修改):`Result<T>`(`Result.success` / `Result.failure` / `fold({required onSuccess, required onFailure})` / `map`)、`AppException` 八子類(`ConnectivityException`、`ServerException(statusCode:)`、`UnauthorizedException`、`ApiException(code:, message:)`、`ParsingException`、`StorageException`、`NativeException(code:)`、`UnknownException(cause:)`,後者 cause 必填)、`AppLogger` / `FakeLogger`(`package:foundation/testing.dart`)。
 - 純 Dart package 用 `fvm dart test`;含 Flutter 依賴的 package 用 `fvm flutter test`(persistence、session 屬後者;networking 為純 Dart)。
-- 工作目錄:`/Users/jason/FlutterProjects/flutter-app-template`。
+- 工作目錄:`<repo>`。
 
 ---
 
