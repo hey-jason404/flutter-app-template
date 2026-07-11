@@ -69,7 +69,7 @@ languageCode+countryCode 完整匹配優先、languageCode 匹配次之。實務
 ./tool/check.sh
 ```
 
-第 4 步「l10n 漂移檢查」會確認 ARB 改動後已重新 `gen-l10n`(見
+第 5 步「l10n 漂移檢查」會確認 ARB 改動後已重新 `gen-l10n`(見
 [`tool/check.sh`](../../tool/check.sh));新語系本身沒有專屬測試,現有
 widget 測試以 `AppLocalizationsEn()` 斷言文案(見
 [`conventions.md` §8.2](../conventions.md)),不需要因新增語系而改動。
