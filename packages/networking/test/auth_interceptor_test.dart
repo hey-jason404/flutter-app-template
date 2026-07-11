@@ -10,15 +10,11 @@ import 'package:test/test.dart';
   final adapter = ScriptedAdapter(script);
   final options = BaseOptions(baseUrl: 'https://api.test');
   final retryClient = Dio(options)..httpClientAdapter = adapter;
-  final dio =
-      Dio(options)
-        ..httpClientAdapter = adapter
-        ..interceptors.add(
-          AuthInterceptor(
-            tokenProvider: tokenProvider,
-            retryClient: retryClient,
-          ),
-        );
+  final dio = Dio(options)
+    ..httpClientAdapter = adapter
+    ..interceptors.add(
+      AuthInterceptor(tokenProvider: tokenProvider, retryClient: retryClient),
+    );
   return (dio: dio, adapter: adapter);
 }
 

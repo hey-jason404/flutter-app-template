@@ -17,8 +17,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (_) => GetIt.instance<ItemListBloc>()..add(const ItemListRequested()),
+      create: (_) =>
+          GetIt.instance<ItemListBloc>()..add(const ItemListRequested()),
       child: AppPageScaffold(
         title: context.l10n.homeTitle,
         body: BlocBuilder<ItemListBloc, ItemListState>(
@@ -27,10 +27,8 @@ class HomePage extends StatelessWidget {
               ItemListLoading() => const AppLoadingIndicator(),
               ItemListError() => AppErrorView(
                 message: context.l10n.commonErrorGeneric,
-                onRetry:
-                    () => context.read<ItemListBloc>().add(
-                      const ItemListRequested(),
-                    ),
+                onRetry: () =>
+                    context.read<ItemListBloc>().add(const ItemListRequested()),
                 retryLabel: context.l10n.commonRetry,
               ),
               ItemListLoaded(:final items) when items.isEmpty => AppEmptyView(
