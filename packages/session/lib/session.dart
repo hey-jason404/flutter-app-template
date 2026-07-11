@@ -2,5 +2,6 @@
 library;
 
 export 'src/auth_tokens.dart';
+export 'src/session_manager.dart';
 export 'src/session_state.dart';
 export 'src/token_refresh_gateway.dart';
