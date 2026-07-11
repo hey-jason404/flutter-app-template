@@ -42,12 +42,15 @@ AppException _mapBadResponse(DioException exception, StackTrace stackTrace) {
     );
   }
   final body = exception.response?.data;
-  final envelope =
-      body is Map<dynamic, dynamic> ? body : const <dynamic, dynamic>{};
-  final code =
-      envelope['code'] is String ? envelope['code'] as String : '$statusCode';
-  final message =
-      envelope['message'] is String ? envelope['message'] as String : '';
+  final envelope = body is Map<dynamic, dynamic>
+      ? body
+      : const <dynamic, dynamic>{};
+  final code = envelope['code'] is String
+      ? envelope['code'] as String
+      : '$statusCode';
+  final message = envelope['message'] is String
+      ? envelope['message'] as String
+      : '';
   return ApiException(
     code: code,
     message: message,

@@ -46,7 +46,11 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _wrap(Scaffold(body: AppErrorView(message: 'x', onRetry: () {}))),
+      _wrap(
+        Scaffold(
+          body: AppErrorView(message: 'x', onRetry: () {}),
+        ),
+      ),
     );
     expect(find.byType(FilledButton), findsNothing);
     expect(find.text('x'), findsOneWidget);

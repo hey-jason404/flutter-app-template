@@ -285,12 +285,12 @@ String _pbxprojLineRule(
     content,
     (line) => _pbxprojLineRule(line, oldId: oldId, newId: newId),
   );
-  final baseCount =
-      RegExp('${RegExp.escape(oldId)};').allMatches(content).length;
-  final testsCount =
-      RegExp(
-        '${RegExp.escape('$oldId.RunnerTests')};',
-      ).allMatches(content).length;
+  final baseCount = RegExp(
+    '${RegExp.escape(oldId)};',
+  ).allMatches(content).length;
+  final testsCount = RegExp(
+    '${RegExp.escape('$oldId.RunnerTests')};',
+  ).allMatches(content).length;
   final summaries = <_Summary>[
     if (baseCount > 0) _Summary(from: oldId, to: newId, count: baseCount),
     if (testsCount > 0)
@@ -450,95 +450,86 @@ bool _runSelfTest() {
   final cases = <({String label, bool Function() check})>[
     (
       label: 'gradle namespace 行替換',
-      check:
-          () =>
-              _gradleLineRule(
-                '    namespace = "com.example.template.app"',
-                oldId: 'com.example.template.app',
-                newId: 'com.mycorp.my_app',
-              ) ==
-              '    namespace = "com.mycorp.my_app"',
+      check: () =>
+          _gradleLineRule(
+            '    namespace = "com.example.template.app"',
+            oldId: 'com.example.template.app',
+            newId: 'com.mycorp.my_app',
+          ) ==
+          '    namespace = "com.mycorp.my_app"',
     ),
     (
       label: 'gradle applicationId 行替換',
-      check:
-          () =>
-              _gradleLineRule(
-                '        applicationId = "com.example.template.app"',
-                oldId: 'com.example.template.app',
-                newId: 'com.mycorp.my_app',
-              ) ==
-              '        applicationId = "com.mycorp.my_app"',
+      check: () =>
+          _gradleLineRule(
+            '        applicationId = "com.example.template.app"',
+            oldId: 'com.example.template.app',
+            newId: 'com.mycorp.my_app',
+          ) ==
+          '        applicationId = "com.mycorp.my_app"',
     ),
     (
       label: 'gradle 不相關行維持不變',
-      check:
-          () =>
-              _gradleLineRule(
-                '    compileSdk = flutter.compileSdkVersion',
-                oldId: 'com.example.template.app',
-                newId: 'com.mycorp.my_app',
-              ) ==
-              '    compileSdk = flutter.compileSdkVersion',
+      check: () =>
+          _gradleLineRule(
+            '    compileSdk = flutter.compileSdkVersion',
+            oldId: 'com.example.template.app',
+            newId: 'com.mycorp.my_app',
+          ) ==
+          '    compileSdk = flutter.compileSdkVersion',
     ),
     (
       label: 'pbxproj 基本 bundle id 行替換',
-      check:
-          () =>
-              _pbxprojLineRule(
-                '\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.example.template.app;',
-                oldId: 'com.example.template.app',
-                newId: 'com.mycorp.my_app',
-              ) ==
-              '\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.mycorp.my_app;',
+      check: () =>
+          _pbxprojLineRule(
+            '\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.example.template.app;',
+            oldId: 'com.example.template.app',
+            newId: 'com.mycorp.my_app',
+          ) ==
+          '\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.mycorp.my_app;',
     ),
     (
       label: 'pbxproj RunnerTests 變體行替換',
-      check:
-          () =>
-              _pbxprojLineRule(
-                '\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = '
-                'com.example.template.app.RunnerTests;',
-                oldId: 'com.example.template.app',
-                newId: 'com.mycorp.my_app',
-              ) ==
-              '\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = '
-                  'com.mycorp.my_app.RunnerTests;',
+      check: () =>
+          _pbxprojLineRule(
+            '\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = '
+            'com.example.template.app.RunnerTests;',
+            oldId: 'com.example.template.app',
+            newId: 'com.mycorp.my_app',
+          ) ==
+          '\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = '
+              'com.mycorp.my_app.RunnerTests;',
     ),
     (
       label: 'AndroidManifest android:label 行替換',
-      check:
-          () =>
-              _manifestLabelLineRule('        android:label="app"', 'My App') ==
-              '        android:label="My App"',
+      check: () =>
+          _manifestLabelLineRule('        android:label="app"', 'My App') ==
+          '        android:label="My App"',
     ),
     (
       label: 'Kotlin package 宣告行替換',
-      check:
-          () =>
-              _kotlinPackageLineRule(
-                'package com.example.template.app',
-                oldId: 'com.example.template.app',
-                newId: 'com.mycorp.my_app',
-              ) ==
-              'package com.mycorp.my_app',
+      check: () =>
+          _kotlinPackageLineRule(
+            'package com.example.template.app',
+            oldId: 'com.example.template.app',
+            newId: 'com.mycorp.my_app',
+          ) ==
+          'package com.mycorp.my_app',
     ),
     (
       label: '根 pubspec name 行替換',
-      check:
-          () =>
-              _rootPubspecNameLineRule(
-                'name: workspace_root',
-                'my_app_workspace',
-              ) ==
-              'name: my_app_workspace',
+      check: () =>
+          _rootPubspecNameLineRule(
+            'name: workspace_root',
+            'my_app_workspace',
+          ) ==
+          'name: my_app_workspace',
     ),
     (
       label: 'Info.plist <string> 值行替換',
-      check:
-          () =>
-              _plistStringValueLineRule('\t<string>App</string>', 'My App') ==
-              '\t<string>My App</string>',
+      check: () =>
+          _plistStringValueLineRule('\t<string>App</string>', 'My App') ==
+          '\t<string>My App</string>',
     ),
     (
       label: 'org 格式驗證接受 com.mycorp',

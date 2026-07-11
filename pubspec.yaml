@@ -3,7 +3,7 @@ description: flutter-app-template workspace root.
 publish_to: none
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.12.0
 
 workspace:
   - app
@@ -20,4 +20,4 @@ workspace:
   - packages/session
 
 dev_dependencies:
-  very_good_analysis: ^7.0.0
+  very_good_analysis: ^8.0.0

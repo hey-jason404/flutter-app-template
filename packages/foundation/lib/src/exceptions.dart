@@ -22,10 +22,9 @@ final class ConnectivityException extends AppException {
 
   /// 輸出類別名稱與 [cause](若有)供除錯與記錄使用。
   @override
-  String toString() =>
-      cause == null
-          ? 'ConnectivityException()'
-          : 'ConnectivityException(cause: $cause)';
+  String toString() => cause == null
+      ? 'ConnectivityException()'
+      : 'ConnectivityException(cause: $cause)';
 }
 
 /// HTTP 5xx。
@@ -42,10 +41,9 @@ final class ServerException extends AppException {
 
   /// 輸出類別名稱、[statusCode] 與 [cause](若有)供除錯與記錄使用。
   @override
-  String toString() =>
-      cause == null
-          ? 'ServerException(statusCode: $statusCode)'
-          : 'ServerException(statusCode: $statusCode, cause: $cause)';
+  String toString() => cause == null
+      ? 'ServerException(statusCode: $statusCode)'
+      : 'ServerException(statusCode: $statusCode, cause: $cause)';
 }
 
 /// 401,且 token refresh 失敗(觸發 session 過期流程)。
@@ -55,10 +53,9 @@ final class UnauthorizedException extends AppException {
 
   /// 輸出類別名稱與 [cause](若有)供除錯與記錄使用。
   @override
-  String toString() =>
-      cause == null
-          ? 'UnauthorizedException()'
-          : 'UnauthorizedException(cause: $cause)';
+  String toString() => cause == null
+      ? 'UnauthorizedException()'
+      : 'UnauthorizedException(cause: $cause)';
 }
 
 /// HTTP 4xx 業務錯誤,攜帶後端錯誤碼與訊息。
@@ -79,10 +76,9 @@ final class ApiException extends AppException {
 
   /// 輸出類別名稱、[code]、[message] 與 [cause](若有)供除錯與記錄使用。
   @override
-  String toString() =>
-      cause == null
-          ? 'ApiException(code: $code, message: $message)'
-          : 'ApiException(code: $code, message: $message, cause: $cause)';
+  String toString() => cause == null
+      ? 'ApiException(code: $code, message: $message)'
+      : 'ApiException(code: $code, message: $message, cause: $cause)';
 }
 
 /// JSON 解析或 DTO 轉換失敗。
@@ -117,10 +113,9 @@ final class NativeException extends AppException {
 
   /// 輸出類別名稱、[code] 與 [cause](若有)供除錯與記錄使用。
   @override
-  String toString() =>
-      cause == null
-          ? 'NativeException(code: $code)'
-          : 'NativeException(code: $code, cause: $cause)';
+  String toString() => cause == null
+      ? 'NativeException(code: $code)'
+      : 'NativeException(code: $code, cause: $cause)';
 }
 
 /// 以上皆非的兜底。出現即代表有未收攏的錯誤來源,應追查 [cause]。

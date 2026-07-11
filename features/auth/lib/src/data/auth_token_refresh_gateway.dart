@@ -19,8 +19,7 @@ class AuthTokenRefreshGateway implements TokenRefreshGateway {
       _plainClient.post<AuthTokens>(
         '/auth/refresh',
         body: {'refreshToken': refreshToken},
-        parse:
-            (data) =>
-                AuthTokensDto.fromJson(data as Map<String, dynamic>).toTokens(),
+        parse: (data) =>
+            AuthTokensDto.fromJson(data as Map<String, dynamic>).toTokens(),
       );
 }

@@ -28,22 +28,20 @@ Future<void> composeDependencies(
   AppConfig config, {
   SecureStore? secureStoreOverride,
 }) async {
-  final adapter =
-      config.useFakeBackend
-          ? DemoBackendAdapter(latency: config.demoBackendLatency)
-          : null;
+  final adapter = config.useFakeBackend
+      ? DemoBackendAdapter(latency: config.demoBackendLatency)
+      : null;
   gi
     ..registerSingleton<AppConfig>(config)
     ..registerSingleton<BufferingCrashReporter>(BufferingCrashReporter())
     ..registerLazySingleton<CrashReporter>(() => gi<BufferingCrashReporter>())
     ..registerLazySingleton<AppLogger>(
-      () =>
-          config.environment == AppEnvironment.prod
-              ? CrashReportingLogger(
-                inner: ConsoleLogger(),
-                reporter: gi<CrashReporter>(),
-              )
-              : ConsoleLogger(),
+      () => config.environment == AppEnvironment.prod
+          ? CrashReportingLogger(
+              inner: ConsoleLogger(),
+              reporter: gi<CrashReporter>(),
+            )
+          : ConsoleLogger(),
     )
     ..registerSingletonAsync<SharedPreferences>(SharedPreferences.getInstance)
     ..registerLazySingleton<KeyValueStore>(
@@ -82,22 +80,20 @@ Future<void> composeDependencies(
       ),
     )
     ..registerLazySingleton<AnalyticsTracker>(
-      () =>
-          config.firebaseEnabled
-              ? FirebaseAnalyticsTracker(FirebaseAnalytics.instance)
-              : const DisabledAnalyticsTracker(),
+      () => config.firebaseEnabled
+          ? FirebaseAnalyticsTracker(FirebaseAnalytics.instance)
+          : const DisabledAnalyticsTracker(),
     )
     ..registerLazySingleton<PushNotifications>(
-      () =>
-          config.firebaseEnabled
-              ? FcmPushNotifications(
-                messaging: FirebaseMessaging.instance,
-                openedMessages: FirebaseMessaging.onMessageOpenedApp,
-                getInitialMessage:
-                    () => FirebaseMessaging.instance.getInitialMessage(),
-                foregroundRemoteMessages: FirebaseMessaging.onMessage,
-              )
-              : const DisabledPushNotifications(),
+      () => config.firebaseEnabled
+          ? FcmPushNotifications(
+              messaging: FirebaseMessaging.instance,
+              openedMessages: FirebaseMessaging.onMessageOpenedApp,
+              getInitialMessage: () =>
+                  FirebaseMessaging.instance.getInitialMessage(),
+              foregroundRemoteMessages: FirebaseMessaging.onMessage,
+            )
+          : const DisabledPushNotifications(),
     );
   registerAuthFeature(gi);
   registerHomeFeature(gi);

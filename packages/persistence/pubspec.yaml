@@ -4,12 +4,12 @@ publish_to: none
 resolution: workspace
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.12.0
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_secure_storage: ^9.2.2
+  flutter_secure_storage: ^10.0.0
   foundation: any
   shared_preferences: ^2.3.2
 

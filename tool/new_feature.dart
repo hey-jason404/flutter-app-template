@@ -94,12 +94,11 @@ Iterable<String> _packageNames() => Directory('packages')
     .whereType<Directory>()
     .map((d) => d.uri.pathSegments.where((s) => s.isNotEmpty).last);
 
-String _toPascalCase(String snake) =>
-    snake
-        .split('_')
-        .where((s) => s.isNotEmpty)
-        .map((s) => s[0].toUpperCase() + s.substring(1))
-        .join();
+String _toPascalCase(String snake) => snake
+    .split('_')
+    .where((s) => s.isNotEmpty)
+    .map((s) => s[0].toUpperCase() + s.substring(1))
+    .join();
 
 String _toCamelCase(String snake) {
   final pascal = _toPascalCase(snake);
@@ -174,14 +173,15 @@ void _generateFeature({
   stdout.writeln('✓ 已產生 $root/');
 }
 
-String _pubspecTemplate(String name) => '''
+String _pubspecTemplate(String name) =>
+    '''
 name: $name
 description: $name 功能:domain/data/presentation 層(項目清單、blocs)。
 publish_to: none
 resolution: workspace
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.12.0
 
 dependencies:
   bloc: ^9.0.0
@@ -190,8 +190,8 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.0.0
   foundation: any
-  get_it: ^8.0.0
-  go_router: ^14.6.0
+  get_it: ^9.0.0
+  go_router: ^17.0.0
   localization: any
   navigation: any
   networking: any
@@ -203,7 +203,8 @@ dev_dependencies:
   mocktail: ^1.0.4
 ''';
 
-String _barrelTemplate({required String name, required String pascal}) => '''
+String _barrelTemplate({required String name, required String pascal}) =>
+    '''
 /// $pascal 功能對外入口。
 library;
 
@@ -219,7 +220,8 @@ export 'src/presentation/pages/${name}_page.dart';
 export 'src/routes.dart';
 ''';
 
-String _diTemplate({required String name, required String pascal}) => '''
+String _diTemplate({required String name, required String pascal}) =>
+    '''
 ${_imports(['get_it/get_it.dart', '$name/src/data/repositories/${name}_repository_impl.dart', '$name/src/domain/repositories/${name}_repository.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_bloc.dart', 'networking/networking.dart'])}
 
 /// 註冊 $name feature 的依賴(供 app 以 `{{feature-registry}}` 插入)。
@@ -238,16 +240,18 @@ String _routesTemplate({
   required String name,
   required String pascal,
   required String camel,
-}) => '''
+}) =>
+    '''
 ${_imports(['go_router/go_router.dart', '$name/src/presentation/pages/${name}_page.dart', 'navigation/navigation.dart'])}
 
 /// $name feature 對外提供的路由(供 app 路由表以 `{{feature-registry}}` 插入)。
 List<RouteBase> ${camel}Routes() => [
-  GoRoute(path: RoutePaths.$camel, builder: (_, __) => const ${pascal}Page()),
+  GoRoute(path: RoutePaths.$camel, builder: (_, _) => const ${pascal}Page()),
 ];
 ''';
 
-String _entityTemplate({required String pascal}) => '''
+String _entityTemplate({required String pascal}) =>
+    '''
 /// $pascal 清單項目。
 class ${pascal}Entry {
   /// 以已解析欄位建立。
@@ -273,7 +277,8 @@ abstract interface class ${pascal}Repository {
 }
 ''';
 
-String _dtoTemplate({required String name, required String pascal}) => '''
+String _dtoTemplate({required String name, required String pascal}) =>
+    '''
 import 'package:$name/src/domain/entities/${name}_entry.dart';
 
 /// `/$name/entries` 項目的 DTO。
@@ -305,7 +310,8 @@ class ${pascal}EntryDto {
 String _repositoryImplTemplate({
   required String name,
   required String pascal,
-}) => '''
+}) =>
+    '''
 ${_imports(['foundation/foundation.dart', '$name/src/data/dtos/${name}_entry_dto.dart', '$name/src/domain/entities/${name}_entry.dart', '$name/src/domain/repositories/${name}_repository.dart', 'networking/networking.dart'])}
 
 /// [${pascal}Repository] 的 HTTP 實作。
@@ -335,7 +341,8 @@ class ${pascal}RepositoryImpl implements ${pascal}Repository {
 }
 ''';
 
-String _blocEventTemplate({required String pascal}) => '''
+String _blocEventTemplate({required String pascal}) =>
+    '''
 /// $pascal 清單頁的事件(sealed;命名採「主詞+過去式」)。
 sealed class ${pascal}ListEvent {
   /// 基底建構子,僅供子類 super 呼叫。
@@ -349,7 +356,8 @@ final class ${pascal}ListRequested extends ${pascal}ListEvent {
 }
 ''';
 
-String _blocStateTemplate({required String name, required String pascal}) => '''
+String _blocStateTemplate({required String name, required String pascal}) =>
+    '''
 ${_imports(['foundation/foundation.dart', '$name/src/domain/entities/${name}_entry.dart'])}
 
 /// $pascal 清單頁的狀態(sealed;UI 端須 exhaustive switch 渲染)。
@@ -383,7 +391,8 @@ final class ${pascal}ListError extends ${pascal}ListState {
 }
 ''';
 
-String _blocTemplate({required String name, required String pascal}) => '''
+String _blocTemplate({required String name, required String pascal}) =>
+    '''
 ${_imports(['bloc/bloc.dart', '$name/src/domain/repositories/${name}_repository.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_event.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_state.dart'])}
 
 /// $pascal 清單頁的 bloc(spec §4.2 典範實作:純 Dart,不 import Flutter)。
@@ -411,7 +420,8 @@ class ${pascal}ListBloc extends Bloc<${pascal}ListEvent, ${pascal}ListState> {
 }
 ''';
 
-String _pageTemplate({required String name, required String pascal}) => '''
+String _pageTemplate({required String name, required String pascal}) =>
+    '''
 ${_imports(['design_system/design_system.dart', 'flutter/material.dart', 'flutter_bloc/flutter_bloc.dart', 'get_it/get_it.dart', 'localization/localization.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_bloc.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_event.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_state.dart'])}
 
 /// $pascal:項目清單。
@@ -465,7 +475,8 @@ class ${pascal}Page extends StatelessWidget {
 String _repositoryImplTestTemplate({
   required String name,
   required String pascal,
-}) => '''
+}) =>
+    '''
 ${_imports(['flutter_test/flutter_test.dart', 'foundation/foundation.dart', '$name/src/data/repositories/${name}_repository_impl.dart', '$name/src/domain/entities/${name}_entry.dart', 'networking/networking.dart', 'networking/testing.dart'])}
 
 const _config = NetworkingConfig(baseUrl: 'https://api.test');
@@ -532,7 +543,8 @@ void main() {
 }
 ''';
 
-String _blocTestTemplate({required String name, required String pascal}) => '''
+String _blocTestTemplate({required String name, required String pascal}) =>
+    '''
 ${_imports(['bloc_test/bloc_test.dart', 'flutter_test/flutter_test.dart', 'foundation/foundation.dart', '$name/src/domain/entities/${name}_entry.dart', '$name/src/domain/repositories/${name}_repository.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_bloc.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_event.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_state.dart', 'mocktail/mocktail.dart'])}
 
 class _Mock${pascal}Repository extends Mock implements ${pascal}Repository {}
@@ -602,7 +614,8 @@ void main() {
 }
 ''';
 
-String _pageTestTemplate({required String name, required String pascal}) => '''
+String _pageTestTemplate({required String name, required String pascal}) =>
+    '''
 ${_imports(['flutter/material.dart', 'flutter_test/flutter_test.dart', 'foundation/foundation.dart', 'get_it/get_it.dart', '$name/src/domain/entities/${name}_entry.dart', '$name/src/domain/repositories/${name}_repository.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_bloc.dart', '$name/src/presentation/pages/${name}_page.dart', 'localization/localization.dart', 'localization/testing.dart', 'mocktail/mocktail.dart'])}
 
 class _Mock${pascal}Repository extends Mock implements ${pascal}Repository {}
