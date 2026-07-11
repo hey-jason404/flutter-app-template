@@ -11,9 +11,9 @@ class FcmPushNotifications implements PushNotifications {
     required FirebaseMessaging messaging,
     required Stream<RemoteMessage> openedMessages,
     Stream<String>? tokenRefreshes,
-  })  : _messaging = messaging,
-        _openedMessages = openedMessages,
-        _tokenRefreshes = tokenRefreshes;
+  }) : _messaging = messaging,
+       _openedMessages = openedMessages,
+       _tokenRefreshes = tokenRefreshes;
 
   final FirebaseMessaging _messaging;
   final Stream<RemoteMessage> _openedMessages;
@@ -35,9 +35,9 @@ class FcmPushNotifications implements PushNotifications {
 
   @override
   Stream<PushTapEvent> get taps => _openedMessages.map(
-        (message) => PushTapEvent(
-          routePath: message.data['route'] as String?,
-          data: message.data,
-        ),
-      );
+    (message) => PushTapEvent(
+      routePath: message.data['route'] as String?,
+      data: message.data,
+    ),
+  );
 }

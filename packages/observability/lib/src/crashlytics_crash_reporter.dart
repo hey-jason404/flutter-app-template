@@ -13,8 +13,7 @@ class CrashlyticsCrashReporter implements CrashReporter {
     Object error,
     StackTrace? stackTrace, {
     bool fatal = false,
-  }) =>
-      _crashlytics.recordError(error, stackTrace, fatal: fatal);
+  }) => _crashlytics.recordError(error, stackTrace, fatal: fatal);
 
   @override
   Future<void> setUserId(String? userId) =>

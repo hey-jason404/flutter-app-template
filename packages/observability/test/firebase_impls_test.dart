@@ -17,11 +17,8 @@ void main() {
       inner = _MockCrashlytics();
       reporter = CrashlyticsCrashReporter(inner);
       when(
-        () => inner.recordError(
-          any<Object>(),
-          any(),
-          fatal: any(named: 'fatal'),
-        ),
+        () =>
+            inner.recordError(any<Object>(), any(), fatal: any(named: 'fatal')),
       ).thenAnswer((_) async {});
       when(() => inner.setUserIdentifier(any())).thenAnswer((_) async {});
       when(() => inner.log(any())).thenAnswer((_) async {});
@@ -61,9 +58,7 @@ void main() {
 
     test('trackEvent 過濾 null 參數', () async {
       await tracker.trackEvent('tap', parameters: {'a': 1, 'b': null});
-      verify(
-        () => inner.logEvent(name: 'tap', parameters: {'a': 1}),
-      ).called(1);
+      verify(() => inner.logEvent(name: 'tap', parameters: {'a': 1})).called(1);
     });
 
     test('trackScreen 轉呼叫 logScreenView', () async {

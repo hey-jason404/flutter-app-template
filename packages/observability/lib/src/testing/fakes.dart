@@ -66,10 +66,8 @@ class FakeAnalyticsTracker implements AnalyticsTracker {
   Future<void> trackEvent(
     String name, {
     Map<String, Object?> parameters = const {},
-  }) async =>
-      events.add(TrackedEvent(name, parameters));
+  }) async => events.add(TrackedEvent(name, parameters));
 
   @override
-  Future<void> trackScreen(String screenName) async =>
-      screens.add(screenName);
+  Future<void> trackScreen(String screenName) async => screens.add(screenName);
 }

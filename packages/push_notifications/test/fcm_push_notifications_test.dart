@@ -13,10 +13,8 @@ void main() {
   late _MockMessaging messaging;
   late StreamController<RemoteMessage> opened;
 
-  FcmPushNotifications build() => FcmPushNotifications(
-        messaging: messaging,
-        openedMessages: opened.stream,
-      );
+  FcmPushNotifications build() =>
+      FcmPushNotifications(messaging: messaging, openedMessages: opened.stream);
 
   setUp(() {
     messaging = _MockMessaging();
@@ -36,24 +34,26 @@ void main() {
     return settings;
   }
 
-  test('requestPermission:authorized/provisional 為 true,denied 為 false',
-      () async {
-    final push = build();
-    when(() => messaging.requestPermission()).thenAnswer(
-      (_) async => settingsFor(AuthorizationStatus.authorized),
-    );
-    expect(await push.requestPermission(), isTrue);
+  test(
+    'requestPermission:authorized/provisional 為 true,denied 為 false',
+    () async {
+      final push = build();
+      when(
+        () => messaging.requestPermission(),
+      ).thenAnswer((_) async => settingsFor(AuthorizationStatus.authorized));
+      expect(await push.requestPermission(), isTrue);
 
-    when(() => messaging.requestPermission()).thenAnswer(
-      (_) async => settingsFor(AuthorizationStatus.provisional),
-    );
-    expect(await push.requestPermission(), isTrue);
+      when(
+        () => messaging.requestPermission(),
+      ).thenAnswer((_) async => settingsFor(AuthorizationStatus.provisional));
+      expect(await push.requestPermission(), isTrue);
 
-    when(() => messaging.requestPermission()).thenAnswer(
-      (_) async => settingsFor(AuthorizationStatus.denied),
-    );
-    expect(await push.requestPermission(), isFalse);
-  });
+      when(
+        () => messaging.requestPermission(),
+      ).thenAnswer((_) async => settingsFor(AuthorizationStatus.denied));
+      expect(await push.requestPermission(), isFalse);
+    },
+  );
 
   test('currentToken 轉呼叫 getToken', () async {
     when(() => messaging.getToken()).thenAnswer((_) async => 'tok');
