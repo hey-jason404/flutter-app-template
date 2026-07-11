@@ -4,10 +4,10 @@ import 'package:session/session.dart';
 import 'package:session/testing.dart';
 
 String _label(SessionState state) => switch (state) {
-      SessionRestoring() => 'restoring',
-      SessionAuthenticated() => 'authenticated',
-      SessionUnauthenticated() => 'unauthenticated',
-    };
+  SessionRestoring() => 'restoring',
+  SessionAuthenticated() => 'authenticated',
+  SessionUnauthenticated() => 'unauthenticated',
+};
 
 void main() {
   test('SessionState 為 sealed,可 exhaustive switch', () {

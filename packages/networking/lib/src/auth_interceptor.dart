@@ -10,8 +10,8 @@ class AuthInterceptor extends QueuedInterceptor {
   AuthInterceptor({
     required TokenProvider tokenProvider,
     required Dio retryClient,
-  })  : _tokenProvider = tokenProvider,
-        _retryClient = retryClient;
+  }) : _tokenProvider = tokenProvider,
+       _retryClient = retryClient;
 
   static const _retriedKey = 'networking.auth_retried';
 

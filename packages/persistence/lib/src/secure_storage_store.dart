@@ -17,8 +17,7 @@ class SecureStorageStore implements SecureStore {
       _guard(() => _storage.write(key: key, value: value));
 
   @override
-  Future<void> delete(String key) =>
-      _guard(() => _storage.delete(key: key));
+  Future<void> delete(String key) => _guard(() => _storage.delete(key: key));
 
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {

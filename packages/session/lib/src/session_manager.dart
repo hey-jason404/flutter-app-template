@@ -18,9 +18,9 @@ class SessionManager implements TokenProvider {
     required SecureStore store,
     required TokenRefreshGateway gateway,
     required AppLogger logger,
-  })  : _store = store,
-        _gateway = gateway,
-        _logger = logger;
+  }) : _store = store,
+       _gateway = gateway,
+       _logger = logger;
 
   /// access token 的儲存 key。
   static const accessTokenKey = 'session.access_token';

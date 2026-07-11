@@ -12,13 +12,14 @@ DioException _dioError({
   return DioException(
     requestOptions: options,
     type: type,
-    response: statusCode == null
-        ? null
-        : Response<Object?>(
-            requestOptions: options,
-            statusCode: statusCode,
-            data: body,
-          ),
+    response:
+        statusCode == null
+            ? null
+            : Response<Object?>(
+              requestOptions: options,
+              statusCode: statusCode,
+              data: body,
+            ),
   );
 }
 
@@ -55,10 +56,7 @@ void main() {
 
   test('4xx 轉 ApiException,code/message 取自 body', () {
     final e = mapDioException(
-      _dioError(
-        statusCode: 422,
-        body: {'code': 'E42', 'message': 'invalid'},
-      ),
+      _dioError(statusCode: 422, body: {'code': 'E42', 'message': 'invalid'}),
     );
     expect(e, isA<ApiException>());
     e as ApiException;

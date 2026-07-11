@@ -9,11 +9,8 @@ void main() {
   late FakeTokenRefreshGateway gateway;
   late FakeLogger logger;
 
-  SessionManager build() => SessionManager(
-        store: store,
-        gateway: gateway,
-        logger: logger,
-      );
+  SessionManager build() =>
+      SessionManager(store: store, gateway: gateway, logger: logger);
 
   setUp(() {
     store = InMemorySecureStore();
@@ -25,8 +22,7 @@ void main() {
     expect(build().state, isA<SessionRestoring>());
   });
 
-  test('restore:儲存有完整 tokens → Authenticated 並可取 access token',
-      () async {
+  test('restore:儲存有完整 tokens → Authenticated 並可取 access token', () async {
     store.values[SessionManager.accessTokenKey] = 'a1';
     store.values[SessionManager.refreshTokenKey] = 'r1';
     final manager = build();
@@ -58,9 +54,7 @@ void main() {
 
   test('signOut 清除儲存與快取並發布 Unauthenticated', () async {
     final manager = build();
-    await manager.signIn(
-      const AuthTokens(accessToken: 'a', refreshToken: 'r'),
-    );
+    await manager.signIn(const AuthTokens(accessToken: 'a', refreshToken: 'r'));
     await manager.signOut();
     expect(store.values, isEmpty);
     expect(manager.state, isA<SessionUnauthenticated>());

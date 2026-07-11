@@ -14,34 +14,30 @@ class ApiClient {
     String path, {
     required T Function(dynamic data) parse,
     Map<String, dynamic>? queryParameters,
-  }) =>
-      _send(
-        (dio) => dio.get<dynamic>(path, queryParameters: queryParameters),
-        parse,
-      );
+  }) => _send(
+    (dio) => dio.get<dynamic>(path, queryParameters: queryParameters),
+    parse,
+  );
 
   /// POST 請求。
   Future<Result<T>> post<T>(
     String path, {
     required T Function(dynamic data) parse,
     Object? body,
-  }) =>
-      _send((dio) => dio.post<dynamic>(path, data: body), parse);
+  }) => _send((dio) => dio.post<dynamic>(path, data: body), parse);
 
   /// PUT 請求。
   Future<Result<T>> put<T>(
     String path, {
     required T Function(dynamic data) parse,
     Object? body,
-  }) =>
-      _send((dio) => dio.put<dynamic>(path, data: body), parse);
+  }) => _send((dio) => dio.put<dynamic>(path, data: body), parse);
 
   /// DELETE 請求。
   Future<Result<T>> delete<T>(
     String path, {
     required T Function(dynamic data) parse,
-  }) =>
-      _send((dio) => dio.delete<dynamic>(path), parse);
+  }) => _send((dio) => dio.delete<dynamic>(path), parse);
 
   Future<Result<T>> _send<T>(
     Future<Response<dynamic>> Function(Dio dio) request,

@@ -9,11 +9,8 @@ void main() {
   late InMemorySecureStore store;
   late FakeLogger logger;
 
-  SessionManager build(FakeTokenRefreshGateway gateway) => SessionManager(
-        store: store,
-        gateway: gateway,
-        logger: logger,
-      );
+  SessionManager build(FakeTokenRefreshGateway gateway) =>
+      SessionManager(store: store, gateway: gateway, logger: logger);
 
   setUp(() {
     store = InMemorySecureStore();

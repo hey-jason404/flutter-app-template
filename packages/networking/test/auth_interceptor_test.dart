@@ -12,11 +12,15 @@ import 'support/scripted_adapter.dart';
   final adapter = ScriptedAdapter(script);
   final options = BaseOptions(baseUrl: 'https://api.test');
   final retryClient = Dio(options)..httpClientAdapter = adapter;
-  final dio = Dio(options)
-    ..httpClientAdapter = adapter
-    ..interceptors.add(
-      AuthInterceptor(tokenProvider: tokenProvider, retryClient: retryClient),
-    );
+  final dio =
+      Dio(options)
+        ..httpClientAdapter = adapter
+        ..interceptors.add(
+          AuthInterceptor(
+            tokenProvider: tokenProvider,
+            retryClient: retryClient,
+          ),
+        );
   return (dio: dio, adapter: adapter);
 }
 
@@ -85,16 +89,10 @@ void main() {
       tokenAfterRefresh: 'new',
     );
     final h = _harness(
-      script: [
-        (_) => jsonResponse(401, '{}'),
-        (_) => jsonResponse(401, '{}'),
-      ],
+      script: [(_) => jsonResponse(401, '{}'), (_) => jsonResponse(401, '{}')],
       tokenProvider: provider,
     );
-    await expectLater(
-      h.dio.get<dynamic>('/me'),
-      throwsA(isA<DioException>()),
-    );
+    await expectLater(h.dio.get<dynamic>('/me'), throwsA(isA<DioException>()));
     expect(h.adapter.seen, hasLength(2));
     expect(provider.refreshCallCount, 1);
   });

@@ -18,8 +18,7 @@ class SharedPreferencesStore implements KeyValueStore {
       _guard(() => _prefs.setString(key, value));
 
   @override
-  Future<bool?> readBool(String key) =>
-      _guard(() async => _prefs.getBool(key));
+  Future<bool?> readBool(String key) => _guard(() async => _prefs.getBool(key));
 
   @override
   Future<void> writeBool(String key, {required bool value}) =>
