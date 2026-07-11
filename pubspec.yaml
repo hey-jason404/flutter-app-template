@@ -8,6 +8,7 @@ environment:
 workspace:
   - packages/foundation
   - packages/networking
+  - packages/persistence
 
 dev_dependencies:
   very_good_analysis: ^7.0.0
