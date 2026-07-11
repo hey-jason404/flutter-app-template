@@ -10,15 +10,13 @@ class BufferingCrashReporter implements CrashReporter {
   final List<Future<void> Function(CrashReporter r)> _buffer = [];
   CrashReporter? _delegate;
 
-  /// 掛上真正的 reporter 並 flush 緩衝(依原順序)。
-  void attach(CrashReporter delegate) {
-    _delegate = delegate;
-    for (final replay in _buffer) {
-      // 依序補送;不 await,避免 attach 被上報 IO 卡住。
-      // ignore: discarded_futures -- 補送為 fire-and-forget,失敗不影響啟動
-      replay(delegate);
+  /// 掛上真正的 reporter;先依序 flush 緩衝(含 flush 期間新到的呼叫),完成後才直通。
+  Future<void> attach(CrashReporter delegate) async {
+    while (_buffer.isNotEmpty) {
+      final replay = _buffer.removeAt(0);
+      await replay(delegate);
     }
-    _buffer.clear();
+    _delegate = delegate;
   }
 
   @override
