@@ -25,7 +25,7 @@ class DisabledAnalyticsTracker implements AnalyticsTracker {
 /// 組裝層會改用 `FcmPushNotifications`，此替身不再被使用。
 class DisabledPushNotifications implements PushNotifications {
   /// 建立空實作。
-  DisabledPushNotifications();
+  const DisabledPushNotifications();
 
   @override
   Future<bool> requestPermission() async => false;

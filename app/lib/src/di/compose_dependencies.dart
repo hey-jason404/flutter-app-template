@@ -72,7 +72,7 @@ Future<void> composeDependencies(GetIt gi, AppConfig config) async {
                 getInitialMessage:
                     () => FirebaseMessaging.instance.getInitialMessage(),
               )
-              : DisabledPushNotifications(),
+              : const DisabledPushNotifications(),
     );
   // {{feature-registry}} -- tool/new_feature.dart 於此插入 feature 註冊
 }

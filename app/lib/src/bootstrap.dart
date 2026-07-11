@@ -44,7 +44,9 @@ Future<void> bootstrap(AppConfig config) async {
   await composeDependencies(gi, config); // 2 純註冊
   installErrorHooks(
     // 3
-    logger: gi<AppLogger>(),
+    // hook 自己負責 recordError(含 fatal 語義);logger 僅供本地輸出，
+    // 用 console-only 避免 prod 的 CrashReportingLogger 造成雙重上報。
+    logger: ConsoleLogger(),
     reporter: gi<CrashReporter>(),
   );
   await gi.allReady(); // 4a persistence 等就緒
