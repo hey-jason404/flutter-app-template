@@ -63,5 +63,7 @@ jobs:
       # 驗證 tool/new_feature.dart 產生器骨架可產出、可測試、可通過 analyze。
       # CI 環境用後即棄,不需還原產生的 features/smoke_probe。
       - run: fvm dart run tool/new_feature.dart smoke_probe
+      # 產生器改寫了根 pubspec 的 workspace 清單,顯式 re-resolve 避免隱式 pub get 的版本差異
+      - run: fvm flutter pub get
       - run: cd features/smoke_probe && fvm flutter test
       - run: fvm flutter analyze
