@@ -2,4 +2,5 @@
 library;
 
 export 'src/exceptions.dart';
+export 'src/logger.dart';
 export 'src/result.dart';
