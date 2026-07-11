@@ -15,8 +15,8 @@ class AuthTokenRefreshGateway implements TokenRefreshGateway {
   final ApiClient _plainClient;
 
   @override
-  Future<Result<AuthTokens>> refresh(String refreshToken) => _plainClient
-      .post<AuthTokens>(
+  Future<Result<AuthTokens>> refresh(String refreshToken) =>
+      _plainClient.post<AuthTokens>(
         '/auth/refresh',
         body: {'refreshToken': refreshToken},
         parse:

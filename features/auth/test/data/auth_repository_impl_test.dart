@@ -18,10 +18,7 @@ void main() {
       );
       final repository = AuthRepositoryImpl(client);
 
-      final result = await repository.login(
-        email: 'a@b.com',
-        password: 'pw',
-      );
+      final result = await repository.login(email: 'a@b.com', password: 'pw');
 
       expect(result, isA<Success<AuthTokens>>());
       final tokens = (result as Success<AuthTokens>).value;
@@ -57,10 +54,7 @@ void main() {
       );
       final repository = AuthRepositoryImpl(client);
 
-      final result = await repository.login(
-        email: 'a@b.com',
-        password: 'pw',
-      );
+      final result = await repository.login(email: 'a@b.com', password: 'pw');
 
       expect(result, isA<Failure<AuthTokens>>());
       expect(
