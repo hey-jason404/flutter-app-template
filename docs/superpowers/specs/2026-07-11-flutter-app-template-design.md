@@ -291,3 +291,10 @@ how-to 以示範 feature 的實際檔案為範例,文件與代碼互相印證。
 4. freezed 使用準則定死(建議:DTO 一律 json_serializable、entity 預設手寫,欄位多且需 copyWith 時才用 freezed),寫進 conventions.md。
 5. `rename_project.dart` 的完整規格:package 名、Android applicationId/namespace、iOS bundle id/scheme、app 顯示名稱、Firebase 設定檔占位的替換清單。
 6. 措辭修正:§4.2 第 4 條(feature 內共享狀態下沉到 domain)與 §2.3(跨 feature 契約下沉到 packages/)是兩個不同 scope 的規則,conventions.md 中需分開表述。
+
+以下為計畫 1 最終全分支審查後定案的追加事項:
+
+7. 例外相等策略(定案):`AppException` 不實作 `==`/`hashCode`;測試斷言一律用 `isA<ServerException>()` 類 matcher,不做例外實例的相等比較。寫進 conventions.md(計畫 6),bloc_test 範例(計畫 5)遵循。
+8. check.sh 追加 pubspec 依賴稽核(計畫 2 或 6):`depend_on_referenced_packages` 只擋未宣告的 import,擋不住「宣告了被禁止的依賴」;需以腳本檢查 features/* 的 dependencies 不含 features/*、packages/* 不含 features/* 與 app,使 §2.2 四條規則全數機器可驗證。
+9. `Result.guard`(try/catch → Result 轉換 helper)待計畫 2 依 repository 實際樣板量決定是否補進 foundation,不預先鍍金。
+10. `rename_project.dart` 替換清單需包含 workspace 根 pubspec 的 `name: workspace_root`。
