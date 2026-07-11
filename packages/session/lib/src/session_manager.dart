@@ -43,6 +43,10 @@ class SessionManager implements TokenProvider {
   SessionState get state => _state;
 
   /// 狀態變化的 broadcast stream(僅在改變時發布)。
+  ///
+  /// 事件為同步派送(sync broadcast);listener 回呼中讀取 [state]
+  /// 保證與事件一致,但不得在回呼中同步呼叫 signIn/signOut/restore
+  /// 等變更方法(重入風險)。
   Stream<SessionState> get states => _controller.stream;
 
   /// 從儲存還原登入狀態;儲存損壞時視為未登入,不阻斷啟動。
@@ -89,9 +93,10 @@ class SessionManager implements TokenProvider {
   Future<bool> refreshTokens() async => false; // Task 9 完成實作。
 
   void _emit(SessionState next) {
-    if (next.runtimeType != _state.runtimeType) {
+    final changed = next.runtimeType != _state.runtimeType;
+    _state = next;
+    if (changed) {
       _controller.add(next);
     }
-    _state = next;
   }
 }
