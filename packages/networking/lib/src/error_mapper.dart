@@ -5,6 +5,9 @@ import 'package:foundation/foundation.dart';
 ///
 /// 這是 networking 對外的唯一錯誤形狀;repository 與 bloc
 /// 永遠不會看到 DioException。
+///
+/// dio 5.10 新增的 transformTimeout 視為 timeout 家族,歸
+/// ConnectivityException(controller 裁定,spec §2.4 轉換表未列)。
 AppException mapDioException(DioException exception) {
   final stackTrace = exception.stackTrace;
   switch (exception.type) {

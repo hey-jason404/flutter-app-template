@@ -30,6 +30,7 @@ void main() {
       DioExceptionType.receiveTimeout,
       DioExceptionType.connectionError,
       DioExceptionType.badCertificate,
+      DioExceptionType.transformTimeout,
     ]) {
       expect(
         mapDioException(_dioError(type: type)),
