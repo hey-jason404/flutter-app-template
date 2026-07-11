@@ -130,6 +130,8 @@ graph TD
 
 依賴方向:`session → networking → foundation`(規格 §2.3)。
 
+已知邊角:沒有帶 `Authorization` header 的請求(尚未登入前發出的公開 API)若收到 401,`AuthInterceptor` 會直接以現行 token 重試一次,不觸發 `refreshTokens()`——因為判斷「是否已重試過」看的是 token 是否變動,無 header 時沒有 token 可比對,退回同一路徑。此為有意識接受的邊角,不視為 bug(規格 §10 第 15 條)。
+
 ### 3.2 bootstrap 五步
 
 唯一實作於 [`app/lib/src/bootstrap.dart`](../app/lib/src/bootstrap.dart) 的 `bootstrap()`:

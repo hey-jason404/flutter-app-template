@@ -591,9 +591,11 @@ void main() {
 ''';
 
 String _pageTestTemplate({required String name, required String pascal}) => '''
-${_imports(['flutter/material.dart', 'flutter_test/flutter_test.dart', 'foundation/foundation.dart', 'get_it/get_it.dart', '$name/src/domain/entities/${name}_entry.dart', '$name/src/domain/repositories/${name}_repository.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_bloc.dart', '$name/src/presentation/pages/${name}_page.dart', 'localization/localization.dart', 'mocktail/mocktail.dart'])}
+${_imports(['flutter/material.dart', 'flutter_test/flutter_test.dart', 'foundation/foundation.dart', 'get_it/get_it.dart', '$name/src/domain/entities/${name}_entry.dart', '$name/src/domain/repositories/${name}_repository.dart', '$name/src/presentation/blocs/${name}_list/${name}_list_bloc.dart', '$name/src/presentation/pages/${name}_page.dart', 'localization/localization.dart', 'localization/testing.dart', 'mocktail/mocktail.dart'])}
 
 class _Mock${pascal}Repository extends Mock implements ${pascal}Repository {}
+
+final _l10n = AppLocalizationsEn();
 
 const _entries = [
   ${pascal}Entry(id: '1', title: 't1'),
@@ -645,13 +647,10 @@ void main() {
       await tester.pumpWidget(_app());
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('Something went wrong. Please try again.'),
-        findsOneWidget,
-      );
-      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text(_l10n.commonErrorGeneric), findsOneWidget);
+      expect(find.text(_l10n.commonRetry), findsOneWidget);
 
-      await tester.tap(find.text('Retry'));
+      await tester.tap(find.text(_l10n.commonRetry));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);

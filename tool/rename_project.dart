@@ -417,7 +417,9 @@ void _apply(List<_Target> targets, String newKotlinDir) {
 
 /// 將舊 Kotlin package 目錄下的檔案搬到 [newDir],並由下而上刪除搬空後的舊
 /// package 目錄(不會刪到 `kotlin/` 根目錄,亦不會刪到新舊路徑共用且仍非空
-/// 的祖先目錄,如兩者皆以 `com` 開頭時的 `com/` 目錄)。
+/// 的祖先目錄,如兩者皆以 `com` 開頭時的 `com/` 目錄)。僅搬移直屬檔案
+/// (`entity is File`);Kotlin package 目錄下如有子目錄(例如巢狀套件或額外
+/// 資源目錄),需自行手動搬移,本函式不遞迴處理。
 void _moveKotlinPackageDir(String newDir) {
   final oldDir = Directory(_oldKotlinDir);
   if (!oldDir.existsSync()) return;

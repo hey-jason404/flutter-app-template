@@ -81,6 +81,7 @@ docs/                 # 架構文件、how-to、ADR
   [加 API](docs/how-to/add-an-api.md)、
   [加原生能力](docs/how-to/add-a-native-capability.md)、
   [加共用 package](docs/how-to/add-a-shared-package.md)、
+  [新增語系](docs/how-to/add-a-locale.md)、
   [設定原生 flavor](docs/how-to/configure-native-flavors.md)、
   [設定 Firebase](docs/how-to/configure-firebase.md)。
 - [`docs/adr/`](docs/adr/) — 架構決策紀錄。

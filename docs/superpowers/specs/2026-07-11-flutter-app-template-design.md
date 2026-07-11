@@ -324,3 +324,7 @@ how-to 以示範 feature 的實際檔案為範例,文件與代碼互相印證。
 
 23. conventions.md 需記載的判準:(a) UI 狀態渲染——整頁三態用 exhaustive switch,單一旗標/副作用允許 `is` 檢查(LoginPage vs HomePage 為對照範例);(b) 測試取用文案一律走 `AppLocalizationsEn()` 等 l10n 實例,不硬編字串;(c) demo repository 省略 `sources/` 層的判準——單一 remote 來源且無本地快取時 repository 可直呼 ApiClient,出現第二來源時抽 source;(d) DTO 手寫 fromJson 的判準(欄位少不值 codegen);(e) widget 測試點擊元件用 `find.byType(AppPrimaryButton)` 等公開元件型別,不耦合內部實作。
 24. 產生器實作規格:標記插入方向統一(定為「插在標記行之前」並修正現存不一致);`DemoBackendAdapter` doc 加 baseUrl 路徑前綴陷阱說明;`main_prod.dart` 加 `useFakeBackend` 顯式註解(prod 靜默走假後端為模板陷阱)。
+
+## §10 驗收狀態(2026-07-11)
+
+上列 24 條已全數吸收進實作或於文件記載完畢;已知殘留(列入路線圖,非本次收尾範圍):(a) `tool/check.sh` 的 pubspec 依賴稽核(§10.8/14)只掃 `dependencies`,不掃 `dev_dependencies`,理論上仍可能經由 dev_dependencies 繞開依賴四規則;(b) `tool/check.sh` 的 l10n 漂移檢查(§10.18)對「本機已 regen 但尚未 `git add`」的未 staged 差異仍會判定為漂移而失敗,屬預期行為但易誤讀為 CI 誤報;(c) 產生器藍本(`features/home`)與 `tool/new_feature.dart` 模板之間的同步依賴人工比對,無自動化防呆,亦無獨立 CI smoke job 驗證產生器產物在乾淨環境下可過 `check.sh`,列為後續路線圖項目。

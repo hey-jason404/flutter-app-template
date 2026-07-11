@@ -150,6 +150,8 @@ switch (exception.type) {
 
 `_mapBadResponse` 內:401 → `UnauthorizedException`;5xx → `ServerException`;其餘依後端 envelope 的 `code`/`message` → `ApiException`(`statusCode` 缺失時 `code` 退回 `'$statusCode'`,即已知邊角,規格 §10 第 15 條)。`networking` 的攔截器負責產生前四類;data 層(DTO `fromJson`/轉換函式)只在轉換失敗時產生 `ParsingException`,見 [`packages/networking/lib/src/api_client.dart`](../packages/networking/lib/src/api_client.dart) 的 `_send()`——`parse()` 拋出的任何 `Object` 皆收攏為 `ParsingException`;`persistence` 產生 `StorageException`;`packages/native/*` 產生 `NativeException`。`data` 層之上(repository、bloc)只會看到 `AppException`,repository 一律回傳 `Result<T, AppException>`。
 
+刻意不提供 `Result.guard`——`ApiClient` 已在 `_send()` 集中收攏例外為 `AppException`,repository 因此不需要、也不應該再寫 `try/catch` 樣板去手動包裝(規格 §10 第 9 條定案)。
+
 ## 4. usecase 選配準則(規格 §4.3,唯一允許的彈性)
 
 預設 bloc 直接呼叫 repository(見 `ItemListBloc`、`LoginBloc` 範例,皆未經 usecase)。僅兩種情況抽 usecase:
