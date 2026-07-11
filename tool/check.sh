@@ -3,13 +3,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-echo "── 0/6 pub get ──"
+echo "── 0/7 pub get ──"
 fvm flutter pub get
 
-echo "── 1/6 format ──"
+echo "── 1/7 format ──"
 fvm dart format --set-exit-if-changed .
 
-echo "── 2/6 ignore 稽核(// ignore: 必須附 ' -- 原因')──"
+echo "── 2/7 ignore 稽核(// ignore: 必須附 ' -- 原因')──"
 # 豁免範圍與根 analysis_options.yaml 的 analyzer.exclude(**/src/generated/**)完全對齊
 violations=$(grep -rn "// ignore" --include="*.dart" packages app features tool 2>/dev/null | grep -v "/src/generated/" | grep -v -- " -- " || true)
 if [ -n "$violations" ]; then
@@ -18,7 +18,10 @@ if [ -n "$violations" ]; then
   exit 1
 fi
 
-echo "── 3/6 pubspec 依賴稽核(features 不得互依,packages 不得依賴 feature/app)──"
+echo "── 3/7 護欄稽核(稽核稽核者;見 tool/guard.sh)──"
+bash tool/guard.sh
+
+echo "── 4/7 pubspec 依賴稽核(features 不得互依,packages 不得依賴 feature/app)──"
 # 僅比對 dependencies: 至 dev_dependencies: 之間的區段;依賴名為 '^  <name>:'。
 feature_names=$(ls features)
 dep_violations=""
@@ -54,7 +57,7 @@ if [ -n "$dep_violations" ]; then
   exit 1
 fi
 
-echo "── 4/6 l10n 漂移檢查(ARB 需 regen 為 committed 產物)──"
+echo "── 5/7 l10n 漂移檢查(ARB 需 regen 為 committed 產物)──"
 (cd packages/localization && fvm flutter gen-l10n)
 fvm dart format packages/localization/lib/src/generated
 if ! git diff --exit-code -- packages/localization/lib/src/generated; then
@@ -62,10 +65,10 @@ if ! git diff --exit-code -- packages/localization/lib/src/generated; then
   exit 1
 fi
 
-echo "── 5/6 analyze ──"
+echo "── 6/7 analyze ──"
 fvm flutter analyze
 
-echo "── 6/6 tests(逐 package)──"
+echo "── 7/7 tests(逐 package)──"
 for dir in packages/* features/* app; do
   [ -d "$dir/test" ] || continue
   echo "→ $dir"

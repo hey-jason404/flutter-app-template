@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master, develop]
 
 jobs:
   check:
@@ -31,4 +31,37 @@ jobs:
           sudo chmod +x /usr/local/bin/fvm
 
       - run: flutter pub get
+      # 護欄稽核獨立跑一次(與 check.sh 內建的一步雙保險,防止 check.sh 本身被改動繞過)。
+      - run: ./tool/guard.sh
       - run: ./tool/check.sh
+
+  generator-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Read Flutter version from .fvmrc
+        id: fvm
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.version }}
+          cache: true
+
+      # CI 上沒有 fvm,以 shim 讓 `fvm <cmd>` 直通系統 flutter/dart。
+      - name: Shim fvm
+        run: |
+          sudo tee /usr/local/bin/fvm > /dev/null <<'EOF'
+          #!/usr/bin/env bash
+          exec "$@"
+          EOF
+          sudo chmod +x /usr/local/bin/fvm
+
+      - run: flutter pub get
+
+      # 驗證 tool/new_feature.dart 產生器骨架可產出、可測試、可通過 analyze。
+      # CI 環境用後即棄,不需還原產生的 features/smoke_probe。
+      - run: fvm dart run tool/new_feature.dart smoke_probe
+      - run: cd features/smoke_probe && fvm flutter test
+      - run: fvm flutter analyze

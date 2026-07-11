@@ -29,6 +29,8 @@
 6. **`lib/src/` 一切私有**:feature/package 只透過 barrel file
    (`lib/<name>.dart`)對外輸出;`lib/src/` 內容不得被其他 package/feature
    直接 import。
+7. **分支規範**:永不直接 push `master`/`develop`;一律 `feature` 分支 + PR
+   (見 [`docs/conventions.md` §分支與 PR](docs/conventions.md))。
 
 ## 任務路由表
 
