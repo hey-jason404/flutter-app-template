@@ -1,0 +1,75 @@
+import 'package:app/src/config/app_config.dart';
+import 'package:app/src/di/disabled_services.dart';
+import 'package:app/src/di/placeholder_token_refresh_gateway.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:foundation/foundation.dart';
+import 'package:get_it/get_it.dart';
+import 'package:networking/networking.dart';
+import 'package:observability/observability.dart';
+import 'package:persistence/persistence.dart';
+import 'package:push_notifications/push_notifications.dart';
+import 'package:session/session.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+/// 組裝全部依賴到 [gi](app 生命週期單例);註冊順序即依賴順序。
+///
+/// Firebase 相關一律 lazy 注册，未啟用（`config.firebaseEnabled == false`）
+/// 時不會觸碰 Firebase API。
+Future<void> composeDependencies(GetIt gi, AppConfig config) async {
+  gi
+    ..registerSingleton<AppConfig>(config)
+    ..registerSingleton<BufferingCrashReporter>(BufferingCrashReporter())
+    ..registerLazySingleton<CrashReporter>(() => gi<BufferingCrashReporter>())
+    ..registerLazySingleton<AppLogger>(
+      () => config.environment == AppEnvironment.prod
+          ? CrashReportingLogger(
+              inner: ConsoleLogger(),
+              reporter: gi<CrashReporter>(),
+            )
+          : ConsoleLogger(),
+    )
+    ..registerSingletonAsync<SharedPreferences>(SharedPreferences.getInstance)
+    ..registerLazySingleton<KeyValueStore>(
+      () => SharedPreferencesStore(gi<SharedPreferences>()),
+    )
+    ..registerLazySingleton<SecureStore>(
+      () => SecureStorageStore(const FlutterSecureStorage()),
+    )
+    ..registerLazySingleton<TokenRefreshGateway>(
+      PlaceholderTokenRefreshGateway.new, // Plan 5 auth feature 取代
+    )
+    ..registerLazySingleton<SessionManager>(
+      () => SessionManager(
+        store: gi<SecureStore>(),
+        gateway: gi<TokenRefreshGateway>(),
+        logger: gi<AppLogger>(),
+      ),
+    )
+    ..registerLazySingleton<TokenProvider>(() => gi<SessionManager>())
+    ..registerLazySingleton<ApiClient>(
+      () => ApiClient(
+        createDio(
+          config: NetworkingConfig(baseUrl: config.apiBaseUrl),
+          tokenProvider: gi<TokenProvider>(),
+        ),
+      ),
+    )
+    ..registerLazySingleton<AnalyticsTracker>(
+      () => config.firebaseEnabled
+          ? FirebaseAnalyticsTracker(FirebaseAnalytics.instance)
+          : const DisabledAnalyticsTracker(),
+    )
+    ..registerLazySingleton<PushNotifications>(
+      () => config.firebaseEnabled
+          ? FcmPushNotifications(
+              messaging: FirebaseMessaging.instance,
+              openedMessages: FirebaseMessaging.onMessageOpenedApp,
+              getInitialMessage: () =>
+                  FirebaseMessaging.instance.getInitialMessage(),
+            )
+          : DisabledPushNotifications(),
+    );
+  // {{feature-registry}} -- tool/new_feature.dart 於此插入 feature 註冊
+}
