@@ -3,7 +3,7 @@ import 'package:push_notifications/src/push_notifications.dart';
 
 /// [PushNotifications] 的 FCM 實作。
 ///
-/// openedMessages 由 app 傳入開啟推播時的 stream
+/// openedMessages 由 app 傳入 `FirebaseMessaging.onMessageOpenedApp`
 /// (static stream 無法注入替身,故由組裝層提供)。
 class FcmPushNotifications implements PushNotifications {
   /// 以注入的 messaging 實例與事件來源建立。

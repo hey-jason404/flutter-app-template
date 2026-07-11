@@ -2,24 +2,66 @@ import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:push_notifications/push_notifications.dart';
 
+class _MockMessaging extends Mock implements FirebaseMessaging {}
+
+class _MockSettings extends Mock implements NotificationSettings {}
+
 void main() {
+  late _MockMessaging messaging;
   late StreamController<RemoteMessage> opened;
 
+  FcmPushNotifications build() => FcmPushNotifications(
+        messaging: messaging,
+        openedMessages: opened.stream,
+      );
+
   setUp(() {
+    messaging = _MockMessaging();
     opened = StreamController<RemoteMessage>();
   });
 
-  tearDown(() async {
-    await opened.close();
+  tearDown(() {
+    // 不 await:單訂閱 StreamController 若從未被 listen(如
+    // requestPermission/currentToken 測試),close() 回傳的 Future
+    // 要等到有訂閱者才會 complete,await 會導致測試逾時。
+    unawaited(opened.close());
+  });
+
+  NotificationSettings settingsFor(AuthorizationStatus status) {
+    final settings = _MockSettings();
+    when(() => settings.authorizationStatus).thenReturn(status);
+    return settings;
+  }
+
+  test('requestPermission:authorized/provisional 為 true,denied 為 false',
+      () async {
+    final push = build();
+    when(() => messaging.requestPermission()).thenAnswer(
+      (_) async => settingsFor(AuthorizationStatus.authorized),
+    );
+    expect(await push.requestPermission(), isTrue);
+
+    when(() => messaging.requestPermission()).thenAnswer(
+      (_) async => settingsFor(AuthorizationStatus.provisional),
+    );
+    expect(await push.requestPermission(), isTrue);
+
+    when(() => messaging.requestPermission()).thenAnswer(
+      (_) async => settingsFor(AuthorizationStatus.denied),
+    );
+    expect(await push.requestPermission(), isFalse);
+  });
+
+  test('currentToken 轉呼叫 getToken', () async {
+    when(() => messaging.getToken()).thenAnswer((_) async => 'tok');
+    expect(await build().currentToken(), 'tok');
   });
 
   test('taps 把 RemoteMessage 映射為 PushTapEvent(route key)', () async {
-    final push = FcmPushNotifications(
-      messaging: const _DummyMessaging(),
-      openedMessages: opened.stream,
-    );
+    final push = build();
     final events = <PushTapEvent>[];
     final sub = push.taps.listen(events.add);
 
@@ -34,12 +76,4 @@ void main() {
     expect(events[0].data['x'], '1');
     expect(events[1].routePath, isNull);
   });
-}
-
-/// 最小的 FirebaseMessaging 實現用於測試。
-class _DummyMessaging implements FirebaseMessaging {
-  const _DummyMessaging();
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
