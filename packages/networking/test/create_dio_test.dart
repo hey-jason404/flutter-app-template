@@ -42,8 +42,7 @@ void main() {
       tokenProvider: FakeTokenProvider(),
       extraInterceptors: [marker],
     );
-    final authIndex =
-        dio.interceptors.indexWhere((i) => i is AuthInterceptor);
+    final authIndex = dio.interceptors.indexWhere((i) => i is AuthInterceptor);
     expect(dio.interceptors.indexOf(marker), greaterThan(authIndex));
   });
 }
