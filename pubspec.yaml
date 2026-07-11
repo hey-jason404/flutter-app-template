@@ -7,6 +7,7 @@ environment:
 
 workspace:
   - packages/foundation
+  - packages/navigation
   - packages/networking
   - packages/persistence
   - packages/session
