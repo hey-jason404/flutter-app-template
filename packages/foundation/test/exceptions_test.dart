@@ -25,13 +25,15 @@ void main() {
     );
     expect(describe(const ParsingException()), 'parsing');
     expect(describe(const StorageException()), 'storage');
-    expect(describe(const NativeException(code: 'CAMERA_DENIED')),
-        'native:CAMERA_DENIED');
+    expect(
+      describe(const NativeException(code: 'CAMERA_DENIED')),
+      'native:CAMERA_DENIED',
+    );
     expect(describe(const UnknownException()), 'unknown');
   });
 
   test('cause 與 stackTrace 可攜帶原始錯誤', () {
-    final cause = FormatException('bad json');
+    const cause = FormatException('bad json');
     final st = StackTrace.current;
     final e = ParsingException(cause: cause, stackTrace: st);
     expect(e.cause, same(cause));
