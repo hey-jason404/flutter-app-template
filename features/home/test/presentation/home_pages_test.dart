@@ -9,7 +9,7 @@ import 'package:home/src/presentation/blocs/item_list/item_list_bloc.dart';
 import 'package:home/src/presentation/pages/home_page.dart';
 import 'package:home/src/presentation/pages/item_detail_page.dart';
 import 'package:localization/localization.dart';
-import 'package:localization/src/generated/app_localizations_en.dart';
+import 'package:localization/testing.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockItemRepository extends Mock implements ItemRepository {}

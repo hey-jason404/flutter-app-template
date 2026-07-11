@@ -8,7 +8,7 @@ import 'package:foundation/foundation.dart';
 import 'package:foundation/testing.dart';
 import 'package:get_it/get_it.dart';
 import 'package:localization/localization.dart';
-import 'package:localization/src/generated/app_localizations_en.dart';
+import 'package:localization/testing.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:persistence/testing.dart';
 import 'package:session/session.dart';

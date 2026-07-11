@@ -5,7 +5,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:localization/src/generated/app_localizations_en.dart';
+import 'package:localization/testing.dart';
 import 'package:persistence/testing.dart';
 import 'package:session/session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
