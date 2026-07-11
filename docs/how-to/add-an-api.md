@@ -235,6 +235,28 @@ loading(`CircularProgressIndicator`)、error(重試按鈕點擊後
 [`conventions.md` §8.1](../conventions.md))。文案斷言走
 `AppLocalizationsEn()` 取值,不硬編字串(見 [`conventions.md` §8.2`](../conventions.md))。
 
+## 後端有統一回應信封時(規格 §10.28)
+
+模板的示範後端(`DemoBackendAdapter`)回傳的是裸資料,無 `{ code, data,
+message }` 之類的統一信封,故不內建信封解析層。若專案後端有信封,兩種接法
+擇一:
+
+1. **per-call parse helper**:在 repository 或 DTO 層加一個小 helper,收到
+   response body 後先解信封(取出 `data` 欄位)再丟給既有 `fromJson`,失敗
+   (信封層 code 非成功)時映射為對應 `AppException` 子類。改動侷限在單一
+   API 呼叫路徑,適合信封欄位或錯誤碼含語意需要逐支處理的情況。
+2. **`networking` 的 `extraInterceptors` 掛信封拆解 interceptor**:
+   `createDio` 提供 `extraInterceptors` 參數(掛在 `AuthInterceptor` 之後,
+   見 [`packages/networking/lib/src/create_dio.dart`](../../packages/networking/lib/src/create_dio.dart)),
+   可寫一個 `Interceptor` 在 `onResponse` 統一拆信封、把信封層錯誤碼轉為
+   `DioException` 交給既有 `error_mapper.dart` 處理,一次性套用到所有走
+   `createDio` 建出的 client。適合信封格式全域一致、無例外的情況;注意
+   retryClient 不掛 `extraInterceptors`(見同檔 doc),重試請求不會經過信封
+   拆解。
+
+兩者可並存:全域一致的部分走 interceptor,個別 API 的特殊欄位再用
+per-call helper 補。
+
 ## 收尾
 
 新增/調整 API 後執行:

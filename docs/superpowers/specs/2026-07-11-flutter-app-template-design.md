@@ -328,3 +328,10 @@ how-to 以示範 feature 的實際檔案為範例,文件與代碼互相印證。
 ## §10 驗收狀態(2026-07-11)
 
 上列 24 條已全數吸收進實作或於文件記載完畢;已知殘留(列入路線圖,非本次收尾範圍):(a) `tool/check.sh` 的 pubspec 依賴稽核(§10.8/14)只掃 `dependencies`,不掃 `dev_dependencies`,理論上仍可能經由 dev_dependencies 繞開依賴四規則;(b) `tool/check.sh` 的 l10n 漂移檢查(§10.18)對「本機已 regen 但尚未 `git add`」的未 staged 差異仍會判定為漂移而失敗,屬預期行為但易誤讀為 CI 誤報;(c) 產生器藍本(`features/home`)與 `tool/new_feature.dart` 模板之間的同步依賴人工比對,無自動化防呆,亦無獨立 CI smoke job 驗證產生器產物在乾淨環境下可過 `check.sh`,列為後續路線圖項目。
+
+以下為 2026-07-11 通用性缺口重評(以 template 原則重新推導,排除特定專案視角)後定案:
+
+25. `PushNotifications` 介面補 `foregroundMessages` stream:FCM 前景訊息不暴露會逼專案直接觸碰 FirebaseMessaging.onMessage,違反「Firebase 隔在介面後」鐵律——屬介面完整性缺陷。呈現方式(in-app banner/本地通知/靜默)為專案決策,模板不綁 flutter_local_notifications。
+26. conventions.md 補「第三方 plugin 包裝判準」:需在測試中被替換、或含轉換邏輯的第三方能力 → 包成 packages/ 成員並附 testing.dart fake(先例:persistence、push_notifications);純 UI/一次性工具 → feature 內直接使用。
+27. architecture.md 全域行為節補「啟動 gate(強制更新/維護模式)歸屬」規範性指引:bootstrap 4c 後檢查 + go_router redirect 最高優先層攔截;模板不預建實作(規範性文件,比照 add-a-native-capability.md 先例)。
+28. 已評估並否決(防翻案):連線狀態監控 package(networking 的 ConnectivityException + retry 已是完整故事,需要時依 add-a-shared-package.md 自行擴充)、ApiClient 內建統一信封層(per-call parse 與 extraInterceptors 兩個擴充點已存在;接法寫入 add-an-api.md)。

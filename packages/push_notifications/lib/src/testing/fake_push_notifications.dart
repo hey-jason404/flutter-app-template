@@ -22,12 +22,17 @@ class FakePushNotifications implements PushNotifications {
 
   final _tokenController = StreamController<String>.broadcast();
   final _tapController = StreamController<PushTapEvent>.broadcast();
+  final _foregroundController = StreamController<PushMessage>.broadcast();
 
   /// 模擬 token 更新。
   void emitTokenRefresh(String token) => _tokenController.add(token);
 
   /// 模擬使用者點擊推播。
   void emitTap(PushTapEvent event) => _tapController.add(event);
+
+  /// 模擬前景收到推播訊息。
+  void emitForegroundMessage(PushMessage message) =>
+      _foregroundController.add(message);
 
   @override
   Future<bool> requestPermission() async => permissionResult;
@@ -43,4 +48,7 @@ class FakePushNotifications implements PushNotifications {
 
   @override
   Future<PushTapEvent?> initialTap() async => initialTapEvent;
+
+  @override
+  Stream<PushMessage> get foregroundMessages => _foregroundController.stream;
 }
