@@ -16,7 +16,7 @@
 - 提供介面的 package 自 `lib/testing.dart` 匯出官方 fake;barrel 不匯出 testing。
 - 例外斷言用 `isA<T>()`;測試替身 mocktail 或手寫 fake。
 - 純 Dart package(navigation)用 `fvm dart test`;其餘用 `fvm flutter test`。
-- 工作目錄:`/Users/jason/FlutterProjects/flutter-app-template`。
+- 工作目錄:`<repo>`。
 
 ---
 

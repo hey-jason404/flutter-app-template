@@ -67,3 +67,14 @@ jobs:
       - run: fvm flutter pub get
       - run: cd features/smoke_probe && fvm flutter test
       - run: fvm flutter analyze
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # gitleaks 掃描完整歷史,需要全深度 checkout
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

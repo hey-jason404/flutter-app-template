@@ -16,7 +16,7 @@
 - feature 形狀依 spec §4.1:barrel 只匯出 routes 建構函式、DI 註冊函式、(必要的)gateway 類別;`lib/src/` 私有。
 - 測試斷言例外用 `isA<T>()`;官方 fake 一律取自各 package `testing.dart`。
 - 假後端 API 契約(demo):`POST /auth/login {email,password}`→200 `{accessToken,refreshToken}`(password 為 `wrong` → 401 envelope `{code:'AUTH_INVALID',message:'Invalid credentials'}`);`POST /auth/refresh {refreshToken}`→200 新 tokens(refreshToken 為 `expired` → 401);`GET /items`→200 `{items:[{id,title,description}×5]}`;`GET /items/<id>`→200 單品或 404。
-- 工作目錄:`/Users/jason/FlutterProjects/flutter-app-template`。
+- 工作目錄:`<repo>`。
 
 ---
 

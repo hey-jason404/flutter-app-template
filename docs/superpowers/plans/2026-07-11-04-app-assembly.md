@@ -16,7 +16,7 @@
 - bootstrap 順序定死(spec §5.2):binding → composeDependencies(純註冊)→ 錯誤捕捉掛載 → await 初始化(allReady/Firebase/session.restore)→ runApp。
 - di_smoke_test 用 `firebaseEnabled: false` 的 config(不需 Firebase 環境)。
 - 原生 flavor/scheme(Android productFlavors、iOS schemes、bundle id 後綴)**不在本計畫**:三個 main 進入點即可運行;原生設定歸入計畫 6 的 how-to 手動設定文件(記入 spec §10)。
-- 工作目錄:`/Users/jason/FlutterProjects/flutter-app-template`。
+- 工作目錄:`<repo>`。
 
 ---
 

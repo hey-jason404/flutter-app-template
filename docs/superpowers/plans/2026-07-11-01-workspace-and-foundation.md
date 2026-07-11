@@ -16,7 +16,7 @@
 - `foundation` 不得依賴任何套件(含 Flutter);dev_dependencies 僅允許 `test`。
 - 測試替身不用 mock 套件,`foundation` 的 fake 一律手寫並從 `lib/testing.dart` 匯出。
 - 每個 task 結束必須 commit;commit message 用 conventional commits(`feat:` / `chore:` / `test:` / `ci:`)。
-- 工作目錄:`/Users/jason/FlutterProjects/flutter-app-template`(git repo 已存在,遠端 `origin/main`)。
+- 工作目錄:`<repo>`(git repo 已存在,遠端 `origin/main`)。
 
 ---
 
@@ -118,7 +118,7 @@ library;
 
 - [ ] **Step 5: 驗證 workspace 解析**
 
-Run: `cd /Users/jason/FlutterProjects/flutter-app-template && fvm use 3.29.3 && fvm flutter pub get`
+Run: `cd <repo> && fvm use 3.29.3 && fvm flutter pub get`
 Expected: 成功輸出 `Got dependencies!`,且根目錄產生單一 `.dart_tool/package_config.json`(workspace 共享 resolution 的證明)。若 `fvm` 未安裝,先執行 `brew install fvm`(或 `dart pub global activate fvm`)。
 
 Run: `ls packages/foundation/.dart_tool 2>/dev/null || echo "no local package_config (correct)"`
@@ -591,7 +591,7 @@ import 'package:test/test.dart';
 
 - [ ] **Step 2: 確認 analyze 以 error 攔截**
 
-Run: `cd /Users/jason/FlutterProjects/flutter-app-template && fvm flutter analyze 2>&1 | grep depend_on_referenced_packages`
+Run: `cd <repo> && fvm flutter analyze 2>&1 | grep depend_on_referenced_packages`
 Expected: 輸出一行以 `error` 開頭(非 `info`/`warning`)、規則名為 `depend_on_referenced_packages` 的訊息,指向 `tmp_boundary_probe.dart`。若層級不是 error,回頭檢查根 `analysis_options.yaml` 的 `analyzer.errors` 設定。
 
 - [ ] **Step 3: 移除違規檔,確認 analyze 全綠**

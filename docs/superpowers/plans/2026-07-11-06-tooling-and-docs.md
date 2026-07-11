@@ -13,7 +13,7 @@
 - 沿用全部既有約束(fvm、strict lint、繁中、conventional commits、每 task commit 不 push、最後統一推)。
 - 文件語言:繁體中文(程式碼/指令/識別字原文)。文件中引用的檔案路徑與 API 必須與 repo 現況一致(寫文件前先讀對應原始碼)。
 - spec 為文件內容的權威來源:`docs/superpowers/specs/2026-07-11-flutter-app-template-design.md`(§2 架構、§2.4 錯誤模型、§3 測試、§4 feature 規範、§5 app 層、§6 工具鏈、§10 歷次定案)。
-- 工作目錄:`/Users/jason/FlutterProjects/flutter-app-template`。
+- 工作目錄:`<repo>`。
 
 ---
 
