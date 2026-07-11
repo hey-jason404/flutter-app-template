@@ -312,3 +312,4 @@ how-to 以示範 feature 的實際檔案為範例,文件與代碼互相印證。
 16. 計畫 4 須吸收:(a) push 冷啟動點擊——`PushNotifications` 介面補 `initialTap()`(對應 `getInitialMessage()`)或於組裝層 merge 並在 doc 寫明;(b) AppLogger → CrashReporter 橋接(composite logger)實作於 observability,供 production 組裝,不得散在 app 層。
 17. 計畫 4/5 呼叫端落地時收斂:`AppErrorView` 的 `retryLabel!` 在 release 為 null-check 風險(改條件渲染);`PushTapEvent` 的 `data['route']` cast 改防禦式 `is String`;`AnalyticsTracker` doc 註明參數值限 String/num。
 18. 計畫 6:check.sh 加 l10n 漂移檢查(`gen-l10n && git diff --exit-code`,防 ARB 改了忘 regen);docs 註明 zh-Hant/Hans 擴充方式(`app_zh_Hant.arb`)。
+19. 原生 flavor/scheme 設定(Android productFlavors、iOS schemes、bundle id 後綴,§5.1)不隨模板出廠:三個 main 進入點已可運行(`flutter run -t app/lib/main_dev.dart`);原生設定以計畫 6 的 `docs/how-to/configure-native-flavors.md` 手動步驟文件交付,連同 Firebase 專案配置(`AppConfig.firebaseEnabled` 開關)一併說明。
