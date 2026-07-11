@@ -306,3 +306,9 @@ how-to 以示範 feature 的實際檔案為範例,文件與代碼互相印證。
 13. 計畫 6 conventions.md 需記載:(a) 請求取消(`DioExceptionType.cancel`)映射為 `UnknownException`,bloc 於 dispose-cancel 情境應忽略此錯誤;(b) package 內部 import 採 `package:x/src/...` 絕對路徑為 house style;(c) `SessionManager` 為 app 生命週期單例、`states` 無 replay 的訂閱模式。
 14. §10 第 8 條的 check.sh pubspec 依賴稽核**定於計畫 6** 落地(計畫 2 未做,勿失落)。
 15. 已知邊角(有意識接受):AuthInterceptor 對「無 Authorization header 卻收到 401」的請求會以現行 token 重試一次而不觸發 refresh;`ApiException` 在 statusCode 缺失時 code 為 '0'。
+
+以下為計畫 3 最終全分支審查後定案的追加事項:
+
+16. 計畫 4 須吸收:(a) push 冷啟動點擊——`PushNotifications` 介面補 `initialTap()`(對應 `getInitialMessage()`)或於組裝層 merge 並在 doc 寫明;(b) AppLogger → CrashReporter 橋接(composite logger)實作於 observability,供 production 組裝,不得散在 app 層。
+17. 計畫 4/5 呼叫端落地時收斂:`AppErrorView` 的 `retryLabel!` 在 release 為 null-check 風險(改條件渲染);`PushTapEvent` 的 `data['route']` cast 改防禦式 `is String`;`AnalyticsTracker` doc 註明參數值限 String/num。
+18. 計畫 6:check.sh 加 l10n 漂移檢查(`gen-l10n && git diff --exit-code`,防 ARB 改了忘 regen);docs 註明 zh-Hant/Hans 擴充方式(`app_zh_Hant.arb`)。
