@@ -1,0 +1,10 @@
+.DS_Store
+.dart_tool/
+build/
+.idea/
+*.iml
+.vscode/
+.fvm/
+pubspec.lock
+env/secrets.json
+coverage/

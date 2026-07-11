@@ -1,0 +1,12 @@
+name: workspace_root
+description: flutter-app-template workspace root.
+publish_to: none
+
+environment:
+  sdk: ^3.7.0
+
+workspace:
+  - packages/foundation
+
+dev_dependencies:
+  very_good_analysis: ^7.0.0
