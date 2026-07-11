@@ -6,6 +6,7 @@ environment:
   sdk: ^3.7.0
 
 workspace:
+  - packages/design_system
   - packages/foundation
   - packages/navigation
   - packages/networking
