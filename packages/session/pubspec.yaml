@@ -1,0 +1,18 @@
+name: session
+description: 登入狀態單一真相:token 儲存、SessionState stream、TokenProvider 實作。
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  foundation: any
+  networking: any
+  persistence: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

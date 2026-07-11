@@ -9,6 +9,7 @@ workspace:
   - packages/foundation
   - packages/networking
   - packages/persistence
+  - packages/session
 
 dev_dependencies:
   very_good_analysis: ^7.0.0
