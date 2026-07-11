@@ -46,12 +46,12 @@ void main() {
     expect(gi<AnalyticsTracker>(), isA<AnalyticsTracker>());
     expect(gi<PushNotifications>(), isA<PushNotifications>());
 
-    // {{feature-registry}} -- tool/new_feature.dart 於此插入 feature 驗證
     expect(gi<AuthRepository>(), isA<AuthRepository>());
     expect(gi<LoginBloc>(), isA<LoginBloc>());
     expect(gi<ItemRepository>(), isA<ItemRepository>());
     expect(gi<ItemListBloc>(), isA<ItemListBloc>());
     expect(gi<ItemDetailBloc>(), isA<ItemDetailBloc>());
+    // {{feature-registry}} -- tool/new_feature.dart 於此插入 feature 驗證
   });
 
   test('組裝 prod 設定後,AppLogger 為 CrashReportingLogger', () async {

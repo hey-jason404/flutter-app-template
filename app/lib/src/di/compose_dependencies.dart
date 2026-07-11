@@ -98,7 +98,7 @@ Future<void> composeDependencies(
               )
               : const DisabledPushNotifications(),
     );
-  // {{feature-registry}} -- tool/new_feature.dart 於此插入 feature 註冊
   registerAuthFeature(gi);
   registerHomeFeature(gi);
+  // {{feature-registry}} -- tool/new_feature.dart 於此插入 feature 註冊
 }
