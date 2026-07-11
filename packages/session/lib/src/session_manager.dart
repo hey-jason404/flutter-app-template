@@ -29,7 +29,6 @@ class SessionManager implements TokenProvider {
   static const refreshTokenKey = 'session.refresh_token';
 
   final SecureStore _store;
-  // ignore: unused_field -- Task 9 completes refresh logic
   final TokenRefreshGateway _gateway;
   final AppLogger _logger;
 
@@ -38,6 +37,7 @@ class SessionManager implements TokenProvider {
 
   AuthTokens? _tokens;
   SessionState _state = const SessionRestoring();
+  Future<bool>? _inflightRefresh;
 
   /// 目前狀態。
   SessionState get state => _state;
@@ -90,7 +90,36 @@ class SessionManager implements TokenProvider {
   Future<String?> currentAccessToken() async => _tokens?.accessToken;
 
   @override
-  Future<bool> refreshTokens() async => false; // Task 9 完成實作。
+  Future<bool> refreshTokens() {
+    final inflight = _inflightRefresh;
+    if (inflight != null) {
+      return inflight;
+    }
+    final run = _doRefresh().whenComplete(() => _inflightRefresh = null);
+    _inflightRefresh = run;
+    return run;
+  }
+
+  Future<bool> _doRefresh() async {
+    final tokens = _tokens;
+    if (tokens == null) {
+      return false;
+    }
+    final result = await _gateway.refresh(tokens.refreshToken);
+    return result.fold(
+      onSuccess: (next) async {
+        await _store.write(accessTokenKey, next.accessToken);
+        await _store.write(refreshTokenKey, next.refreshToken);
+        _tokens = next;
+        return true;
+      },
+      onFailure: (exception) async {
+        _logger.warning('token refresh failed: $exception');
+        await signOut();
+        return false;
+      },
+    );
+  }
 
   void _emit(SessionState next) {
     final changed = next.runtimeType != _state.runtimeType;
