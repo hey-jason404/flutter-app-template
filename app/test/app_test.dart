@@ -1,13 +1,11 @@
 import 'package:app/src/app.dart';
 import 'package:app/src/demo/demo_backend_adapter.dart';
 import 'package:auth/auth.dart';
-import 'package:auth/src/presentation/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:foundation/testing.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home/home.dart';
-import 'package:home/src/presentation/pages/home_page.dart';
 import 'package:navigation/navigation.dart';
 import 'package:networking/networking.dart';
 import 'package:persistence/testing.dart';
