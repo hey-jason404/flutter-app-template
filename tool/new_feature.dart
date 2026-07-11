@@ -22,20 +22,28 @@ void main(List<String> arguments) {
   final pascal = _toPascalCase(name);
   final camel = _toCamelCase(name);
 
-  _generateFeature(name: name, pascal: pascal);
-  _wireRootPubspec(name);
-  _wireRoutePaths(name: name, camel: camel);
-  _wireAppPubspec(name);
-  _wireComposeDependencies(name: name, pascal: pascal);
-  _wireAppRouter(name: name, camel: camel);
-  _wireDiSmokeTest(name: name, pascal: pascal);
-  _formatDartFiles([
-    'features/$name',
-    'packages/navigation/lib/src/route_paths.dart',
-    'app/lib/src/di/compose_dependencies.dart',
-    'app/lib/src/router/app_router.dart',
-    'app/test/di_smoke_test.dart',
-  ]);
+  try {
+    _generateFeature(name: name, pascal: pascal);
+    _wireRootPubspec(name);
+    _wireRoutePaths(name: name, camel: camel);
+    _wireAppPubspec(name);
+    _wireComposeDependencies(name: name, pascal: pascal);
+    _wireAppRouter(name: name, camel: camel);
+    _wireDiSmokeTest(name: name, pascal: pascal);
+    _formatDartFiles([
+      'features/$name',
+      'packages/navigation/lib/src/route_paths.dart',
+      'app/lib/src/di/compose_dependencies.dart',
+      'app/lib/src/router/app_router.dart',
+      'app/test/di_smoke_test.dart',
+    ]);
+  } on Object catch (e) {
+    stderr
+      ..writeln('✗ 產生中斷:$e')
+      ..writeln('請執行:git checkout -- . && rm -rf features/$name')
+      ..writeln('然後 fvm flutter pub get 還原 workspace');
+    exit(1);
+  }
 
   _printNextSteps(name: name, pascal: pascal, camel: camel);
 }
@@ -67,9 +75,16 @@ String? _validateName(String name) {
   if (Directory('features/$name').existsSync()) {
     return 'features/$name 已存在';
   }
-  final reserved = {'app', ..._packageNames()};
+  final reserved = {
+    'app',
+    'dart',
+    'flutter',
+    'integration_test',
+    'test',
+    ..._packageNames(),
+  };
   if (reserved.contains(name)) {
-    return "'$name' 為保留名(與 app 或現有 package 同名)";
+    return "'$name' 為保留名(app、SDK 保留字或現有 package 名)";
   }
   return null;
 }
