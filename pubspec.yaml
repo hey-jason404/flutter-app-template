@@ -13,6 +13,7 @@ workspace:
   - packages/networking
   - packages/observability
   - packages/persistence
+  - packages/push_notifications
   - packages/session
 
 dev_dependencies:
