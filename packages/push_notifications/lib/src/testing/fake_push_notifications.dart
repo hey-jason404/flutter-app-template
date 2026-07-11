@@ -5,13 +5,20 @@ import 'package:push_notifications/src/push_notifications.dart';
 /// [PushNotifications] 的官方 fake。
 class FakePushNotifications implements PushNotifications {
   /// 建立 fake。
-  FakePushNotifications({this.permissionResult = true, this.token = 'fake'});
+  FakePushNotifications({
+    this.permissionResult = true,
+    this.token = 'fake',
+    this.initialTapEvent,
+  });
 
   /// requestPermission 的固定回傳。
   final bool permissionResult;
 
   /// currentToken 的固定回傳。
   final String? token;
+
+  /// initialTap 的固定回傳(冷啟動點擊事件)。
+  final PushTapEvent? initialTapEvent;
 
   final _tokenController = StreamController<String>.broadcast();
   final _tapController = StreamController<PushTapEvent>.broadcast();
@@ -33,4 +40,7 @@ class FakePushNotifications implements PushNotifications {
 
   @override
   Stream<PushTapEvent> get taps => _tapController.stream;
+
+  @override
+  Future<PushTapEvent?> initialTap() async => initialTapEvent;
 }

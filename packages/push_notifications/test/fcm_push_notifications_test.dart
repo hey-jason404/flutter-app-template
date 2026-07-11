@@ -13,8 +13,11 @@ void main() {
   late _MockMessaging messaging;
   late StreamController<RemoteMessage> opened;
 
-  FcmPushNotifications build() =>
-      FcmPushNotifications(messaging: messaging, openedMessages: opened.stream);
+  FcmPushNotifications build() => FcmPushNotifications(
+    messaging: messaging,
+    openedMessages: opened.stream,
+    getInitialMessage: () async => null,
+  );
 
   setUp(() {
     messaging = _MockMessaging();
@@ -75,5 +78,36 @@ void main() {
     expect(events[0].routePath, '/home');
     expect(events[0].data['x'], '1');
     expect(events[1].routePath, isNull);
+  });
+
+  test('initialTap:有冷啟動訊息時映射,無則 null', () async {
+    final withMessage = FcmPushNotifications(
+      messaging: messaging,
+      openedMessages: opened.stream,
+      getInitialMessage: () async =>
+          const RemoteMessage(data: {'route': '/home'}),
+    );
+    final tap = await withMessage.initialTap();
+    expect(tap?.routePath, '/home');
+
+    final without = FcmPushNotifications(
+      messaging: messaging,
+      openedMessages: opened.stream,
+      getInitialMessage: () async => null,
+    );
+    expect(await without.initialTap(), isNull);
+  });
+
+  test('data route 非字串時 routePath 為 null(防禦式)', () async {
+    final push = FcmPushNotifications(
+      messaging: messaging,
+      openedMessages: opened.stream,
+      getInitialMessage: () async =>
+          const RemoteMessage(data: {'route': 123, 'k': 'v'}),
+    );
+    final tap = await push.initialTap();
+    expect(tap, isNotNull);
+    expect(tap!.routePath, isNull);
+    expect(tap.data['k'], 'v');
   });
 }

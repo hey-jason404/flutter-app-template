@@ -14,16 +14,13 @@ class AppLoadingIndicator extends StatelessWidget {
 
 /// 錯誤畫面:訊息 + 可選重試。文案由呼叫端提供(design_system 不依賴 localization)。
 class AppErrorView extends StatelessWidget {
-  /// 建立錯誤畫面;[onRetry] 非 null 時必須提供 [retryLabel]。
+  /// 建立錯誤畫面;[onRetry] 與 [retryLabel] 需成對提供,缺一則不顯示按鈕。
   const AppErrorView({
     required this.message,
     this.onRetry,
     this.retryLabel,
     super.key,
-  }) : assert(
-         onRetry == null || retryLabel != null,
-         'onRetry 存在時必須提供 retryLabel',
-       );
+  });
 
   /// 錯誤訊息。
   final String message;
@@ -43,7 +40,7 @@ class AppErrorView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(message, textAlign: TextAlign.center),
-            if (onRetry != null) ...[
+            if (onRetry != null && retryLabel != null) ...[
               const SizedBox(height: AppSpacing.md),
               FilledButton(onPressed: onRetry, child: Text(retryLabel!)),
             ],

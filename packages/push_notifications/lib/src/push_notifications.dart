@@ -24,4 +24,8 @@ abstract interface class PushNotifications {
 
   /// 使用者點擊推播的事件(app 訂閱後轉路由)。
   Stream<PushTapEvent> get taps;
+
+  /// 冷啟動點擊:app 由推播點擊啟動時的事件;無則 null。
+  /// app 應於首幀後檢查一次並轉路由。
+  Future<PushTapEvent?> initialTap();
 }

@@ -1,6 +1,14 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:push_notifications/src/push_notifications.dart';
 
+PushTapEvent _toTapEvent(RemoteMessage message) {
+  final route = message.data['route'];
+  return PushTapEvent(
+    routePath: route is String ? route : null,
+    data: message.data,
+  );
+}
+
 /// [PushNotifications] 的 FCM 實作。
 ///
 /// openedMessages 由 app 傳入 `FirebaseMessaging.onMessageOpenedApp`
@@ -10,13 +18,16 @@ class FcmPushNotifications implements PushNotifications {
   FcmPushNotifications({
     required FirebaseMessaging messaging,
     required Stream<RemoteMessage> openedMessages,
+    required Future<RemoteMessage?> Function() getInitialMessage,
     Stream<String>? tokenRefreshes,
   }) : _messaging = messaging,
        _openedMessages = openedMessages,
+       _getInitialMessage = getInitialMessage,
        _tokenRefreshes = tokenRefreshes;
 
   final FirebaseMessaging _messaging;
   final Stream<RemoteMessage> _openedMessages;
+  final Future<RemoteMessage?> Function() _getInitialMessage;
   final Stream<String>? _tokenRefreshes;
 
   @override
@@ -34,10 +45,11 @@ class FcmPushNotifications implements PushNotifications {
       _tokenRefreshes ?? _messaging.onTokenRefresh;
 
   @override
-  Stream<PushTapEvent> get taps => _openedMessages.map(
-    (message) => PushTapEvent(
-      routePath: message.data['route'] as String?,
-      data: message.data,
-    ),
-  );
+  Stream<PushTapEvent> get taps => _openedMessages.map(_toTapEvent);
+
+  @override
+  Future<PushTapEvent?> initialTap() async {
+    final message = await _getInitialMessage();
+    return message == null ? null : _toTapEvent(message);
+  }
 }

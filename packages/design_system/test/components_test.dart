@@ -42,6 +42,15 @@ void main() {
     expect(find.byType(FilledButton), findsNothing);
   });
 
+  testWidgets('AppErrorView:onRetry 有但 retryLabel 缺 → 不渲染按鈕也不崩潰',
+      (tester) async {
+    await tester.pumpWidget(
+      _wrap(Scaffold(body: AppErrorView(message: 'x', onRetry: () {}))),
+    );
+    expect(find.byType(FilledButton), findsNothing);
+    expect(find.text('x'), findsOneWidget);
+  });
+
   testWidgets('AppPrimaryButton loading 時停用且顯示 indicator', (tester) async {
     var pressed = false;
     await tester.pumpWidget(
