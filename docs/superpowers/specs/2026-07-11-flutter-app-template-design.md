@@ -313,3 +313,9 @@ how-to 以示範 feature 的實際檔案為範例,文件與代碼互相印證。
 17. 計畫 4/5 呼叫端落地時收斂:`AppErrorView` 的 `retryLabel!` 在 release 為 null-check 風險(改條件渲染);`PushTapEvent` 的 `data['route']` cast 改防禦式 `is String`;`AnalyticsTracker` doc 註明參數值限 String/num。
 18. 計畫 6:check.sh 加 l10n 漂移檢查(`gen-l10n && git diff --exit-code`,防 ARB 改了忘 regen);docs 註明 zh-Hant/Hans 擴充方式(`app_zh_Hant.arb`)。
 19. 原生 flavor/scheme 設定(Android productFlavors、iOS schemes、bundle id 後綴,§5.1)不隨模板出廠:三個 main 進入點已可運行(`flutter run -t app/lib/main_dev.dart`);原生設定以計畫 6 的 `docs/how-to/configure-native-flavors.md` 手動步驟文件交付,連同 Firebase 專案配置(`AppConfig.firebaseEnabled` 開關)一併說明。
+
+以下為計畫 4 最終全分支審查後定案的追加事項:
+
+20. **§10.11(createDio 擴充)遞延至計畫 5,勿失落**:計畫 4 未吸收。計畫 5 的真實 TokenRefreshGateway 需要「無 AuthInterceptor 的 plain client 工廠」(§10.11c),必須隨 auth feature 一併落地;(a) 額外 interceptors 掛點與 (b) retryClient logging 決策亦於計畫 5 或 6 收斂。
+21. 計畫 5:App 補 go_router `errorBuilder`(推播任意 routePath 落到預設錯誤頁無返回途徑);Plan 5 移除 NavigationBar 佔位 destination 時一併打磨。
+22. 計畫 6:產生器的標記匹配規則定為「行內含 `{{feature-registry}}` / `{{route-paths}}` 即為插入點」(現存標記行有無 ` -- 說明` 後綴不一);`app/README.md` 改寫(現為 flutter create 樣板)。
