@@ -4,15 +4,15 @@ import 'package:test/test.dart';
 /// sealed class 的核心價值:exhaustive switch。
 /// 這個函式若少列任何子類,是編譯錯誤——測試本身就是護欄的驗證。
 String describe(AppException e) => switch (e) {
-      ConnectivityException() => 'connectivity',
-      ServerException(:final statusCode) => 'server:$statusCode',
-      UnauthorizedException() => 'unauthorized',
-      ApiException(:final code, :final message) => 'api:$code:$message',
-      ParsingException() => 'parsing',
-      StorageException() => 'storage',
-      NativeException(:final code) => 'native:$code',
-      UnknownException() => 'unknown',
-    };
+  ConnectivityException() => 'connectivity',
+  ServerException(:final statusCode) => 'server:$statusCode',
+  UnauthorizedException() => 'unauthorized',
+  ApiException(:final code, :final message) => 'api:$code:$message',
+  ParsingException() => 'parsing',
+  StorageException() => 'storage',
+  NativeException(:final code) => 'native:$code',
+  UnknownException() => 'unknown',
+};
 
 void main() {
   test('exhaustive switch 覆蓋所有子類', () {

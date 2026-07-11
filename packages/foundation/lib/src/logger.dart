@@ -26,9 +26,5 @@ abstract interface class AppLogger {
   void warning(String message);
 
   /// 記錄 error 等級訊息,可含錯誤物件與堆疊追蹤。
-  void error(
-    String message, {
-    Object? error,
-    StackTrace? stackTrace,
-  });
+  void error(String message, {Object? error, StackTrace? stackTrace});
 }

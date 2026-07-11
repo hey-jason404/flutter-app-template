@@ -16,11 +16,7 @@ class FakeLogger implements AppLogger {
       records.add(LogRecord(LogLevel.warning, message));
 
   @override
-  void error(
-    String message, {
-    Object? error,
-    StackTrace? stackTrace,
-  }) =>
+  void error(String message, {Object? error, StackTrace? stackTrace}) =>
       records.add(
         LogRecord(
           LogLevel.error,
@@ -34,12 +30,7 @@ class FakeLogger implements AppLogger {
 /// 單一日誌記錄。
 class LogRecord {
   /// 建立日誌記錄。
-  const LogRecord(
-    this.level,
-    this.message, {
-    this.error,
-    this.stackTrace,
-  });
+  const LogRecord(this.level, this.message, {this.error, this.stackTrace});
 
   /// 日誌層級。
   final LogLevel level;

@@ -17,17 +17,16 @@ sealed class Result<T> {
   R fold<R>({
     required R Function(T value) onSuccess,
     required R Function(AppException exception) onFailure,
-  }) =>
-      switch (this) {
-        Success<T>(:final value) => onSuccess(value),
-        Failure<T>(:final exception) => onFailure(exception),
-      };
+  }) => switch (this) {
+    Success<T>(:final value) => onSuccess(value),
+    Failure<T>(:final exception) => onFailure(exception),
+  };
 
   /// 將成功值轉換為新型別，失敗結果保持不變。
   Result<R> map<R>(R Function(T value) transform) => switch (this) {
-        Success<T>(:final value) => Result.success(transform(value)),
-        Failure<T>(:final exception) => Result.failure(exception),
-      };
+    Success<T>(:final value) => Result.success(transform(value)),
+    Failure<T>(:final exception) => Result.failure(exception),
+  };
 }
 
 /// 表示成功結果的具體類別。

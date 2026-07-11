@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read Flutter version from .fvmrc
+        id: fvm
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.version }}
+          cache: true
+
+      # CI 上沒有 fvm,以 shim 讓 check.sh 的 `fvm <cmd>` 直通系統 flutter/dart,
+      # 維持「單一腳本、兩處執行」的同構性。
+      - name: Shim fvm
+        run: |
+          sudo tee /usr/local/bin/fvm > /dev/null <<'EOF'
+          #!/usr/bin/env bash
+          exec "$@"
+          EOF
+          sudo chmod +x /usr/local/bin/fvm
+
+      - run: flutter pub get
+      - run: ./tool/check.sh

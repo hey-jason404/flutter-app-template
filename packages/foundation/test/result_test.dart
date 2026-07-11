@@ -12,10 +12,11 @@ void main() {
     const r = Result<int>.failure(UnauthorizedException());
     final out = r.fold(
       onSuccess: (v) => 'ok',
-      onFailure: (e) => switch (e) {
-        UnauthorizedException() => 'unauthorized',
-        _ => 'other',
-      },
+      onFailure:
+          (e) => switch (e) {
+            UnauthorizedException() => 'unauthorized',
+            _ => 'other',
+          },
     );
     expect(out, 'unauthorized');
   });

@@ -4,11 +4,12 @@ import 'package:test/test.dart';
 
 void main() {
   test('FakeLogger 依序記錄各層級', () {
-    final logger = FakeLogger()
-      ..debug('d')
-      ..info('i')
-      ..warning('w')
-      ..error('e', error: 'boom');
+    final logger =
+        FakeLogger()
+          ..debug('d')
+          ..info('i')
+          ..warning('w')
+          ..error('e', error: 'boom');
 
     expect(logger.records, hasLength(4));
     expect(logger.records[0].level, LogLevel.debug);
