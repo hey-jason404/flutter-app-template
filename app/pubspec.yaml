@@ -16,10 +16,10 @@ dependencies:
   firebase_messaging: ^15.2.0
   flutter:
     sdk: flutter
-  flutter_secure_storage: ^9.2.2
+  flutter_secure_storage: ^10.0.0
   foundation: any
-  get_it: ^8.0.0
-  go_router: ^14.6.0
+  get_it: ^9.0.0
+  go_router: ^17.0.0
   home: any
   localization: any
   navigation: any
