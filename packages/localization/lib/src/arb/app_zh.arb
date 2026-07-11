@@ -1,8 +1,16 @@
 {
   "@@locale": "zh",
-  "commonRetry": "重試",
+  "authEmailLabel": "電子郵件",
+  "authLoginButton": "登入",
+  "authLoginFailed": "登入失敗,請確認帳號密碼。",
+  "authLoginTitle": "登入",
+  "authPasswordLabel": "密碼",
   "commonCancel": "取消",
   "commonConfirm": "確認",
+  "commonErrorGeneric": "發生錯誤,請再試一次。",
   "commonLoading": "載入中…",
-  "commonErrorGeneric": "發生錯誤,請再試一次。"
+  "commonRetry": "重試",
+  "homeDetailTitle": "詳情",
+  "homeEmpty": "目前沒有項目。",
+  "homeTitle": "首頁"
 }

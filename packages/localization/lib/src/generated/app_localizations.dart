@@ -98,11 +98,35 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
-  /// No description provided for @commonRetry.
+  /// No description provided for @authEmailLabel.
   ///
   /// In en, this message translates to:
-  /// **'Retry'**
-  String get commonRetry;
+  /// **'Email'**
+  String get authEmailLabel;
+
+  /// No description provided for @authLoginButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authLoginButton;
+
+  /// No description provided for @authLoginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in failed. Check your credentials.'**
+  String get authLoginFailed;
+
+  /// No description provided for @authLoginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get authLoginTitle;
+
+  /// No description provided for @authPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authPasswordLabel;
 
   /// No description provided for @commonCancel.
   ///
@@ -116,17 +140,41 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get commonConfirm;
 
+  /// No description provided for @commonErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get commonErrorGeneric;
+
   /// No description provided for @commonLoading.
   ///
   /// In en, this message translates to:
   /// **'Loading…'**
   String get commonLoading;
 
-  /// No description provided for @commonErrorGeneric.
+  /// No description provided for @commonRetry.
   ///
   /// In en, this message translates to:
-  /// **'Something went wrong. Please try again.'**
-  String get commonErrorGeneric;
+  /// **'Retry'**
+  String get commonRetry;
+
+  /// No description provided for @homeDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Detail'**
+  String get homeDetailTitle;
+
+  /// No description provided for @homeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No items yet.'**
+  String get homeEmpty;
+
+  /// No description provided for @homeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeTitle;
 }
 
 class _AppLocalizationsDelegate

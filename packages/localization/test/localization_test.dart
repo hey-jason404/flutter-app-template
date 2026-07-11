@@ -24,6 +24,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(ctx.l10n.commonRetry, '重試');
     expect(ctx.l10n.commonErrorGeneric, '發生錯誤,請再試一次。');
+    expect(ctx.l10n.authLoginTitle, '登入');
+    expect(ctx.l10n.homeEmpty, '目前沒有項目。');
   });
 
   test('supportedLocales 含 en 與 zh', () {

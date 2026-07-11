@@ -9,7 +9,19 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get commonRetry => 'Retry';
+  String get authEmailLabel => 'Email';
+
+  @override
+  String get authLoginButton => 'Sign in';
+
+  @override
+  String get authLoginFailed => 'Sign-in failed. Check your credentials.';
+
+  @override
+  String get authLoginTitle => 'Login';
+
+  @override
+  String get authPasswordLabel => 'Password';
 
   @override
   String get commonCancel => 'Cancel';
@@ -18,8 +30,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonConfirm => 'Confirm';
 
   @override
+  String get commonErrorGeneric => 'Something went wrong. Please try again.';
+
+  @override
   String get commonLoading => 'Loading…';
 
   @override
-  String get commonErrorGeneric => 'Something went wrong. Please try again.';
+  String get commonRetry => 'Retry';
+
+  @override
+  String get homeDetailTitle => 'Detail';
+
+  @override
+  String get homeEmpty => 'No items yet.';
+
+  @override
+  String get homeTitle => 'Home';
 }

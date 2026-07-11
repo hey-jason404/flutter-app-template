@@ -1,8 +1,16 @@
 {
   "@@locale": "en",
-  "commonRetry": "Retry",
+  "authEmailLabel": "Email",
+  "authLoginButton": "Sign in",
+  "authLoginFailed": "Sign-in failed. Check your credentials.",
+  "authLoginTitle": "Login",
+  "authPasswordLabel": "Password",
   "commonCancel": "Cancel",
   "commonConfirm": "Confirm",
+  "commonErrorGeneric": "Something went wrong. Please try again.",
   "commonLoading": "Loading…",
-  "commonErrorGeneric": "Something went wrong. Please try again."
+  "commonRetry": "Retry",
+  "homeDetailTitle": "Detail",
+  "homeEmpty": "No items yet.",
+  "homeTitle": "Home"
 }
