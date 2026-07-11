@@ -8,6 +8,7 @@ environment:
 workspace:
   - app
   - features/auth
+  - features/home
   - packages/design_system
   - packages/foundation
   - packages/localization
