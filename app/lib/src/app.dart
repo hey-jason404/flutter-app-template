@@ -49,6 +49,10 @@ class _AppState extends State<App> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final initialTap = await push.initialTap();
+      // await 期間 State 可能已被 dispose(_router 已銷毀),必須先檢查。
+      if (!mounted) {
+        return;
+      }
       final routePath = initialTap?.routePath;
       if (routePath != null) {
         _router.go(routePath);
