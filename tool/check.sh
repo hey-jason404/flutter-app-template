@@ -10,7 +10,8 @@ echo "── 1/4 format ──"
 fvm dart format --set-exit-if-changed .
 
 echo "── 2/4 ignore 稽核(// ignore: 必須附 ' -- 原因')──"
-violations=$(grep -rn "// ignore" --include="*.dart" --exclude-dir=generated packages app features tool 2>/dev/null | grep -v -- " -- " || true)
+# 豁免範圍與根 analysis_options.yaml 的 analyzer.exclude(**/src/generated/**)完全對齊
+violations=$(grep -rn "// ignore" --include="*.dart" packages app features tool 2>/dev/null | grep -v "/src/generated/" | grep -v -- " -- " || true)
 if [ -n "$violations" ]; then
   echo "✗ 未附原因的 ignore:"
   echo "$violations"
