@@ -14,5 +14,6 @@ dependencies:
   persistence: any
 
 dev_dependencies:
+  dio: ^5.7.0
   flutter_test:
     sdk: flutter

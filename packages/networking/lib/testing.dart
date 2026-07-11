@@ -2,3 +2,4 @@
 library;
 
 export 'src/testing/fake_token_provider.dart';
+export 'src/testing/scripted_adapter.dart';

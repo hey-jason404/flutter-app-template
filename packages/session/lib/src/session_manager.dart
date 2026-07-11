@@ -12,6 +12,9 @@ import 'package:session/src/token_refresh_gateway.dart';
 /// 生命週期:app bootstrap 建立唯一實例並 `restore()`;
 /// auth feature 登入成功後呼叫 [signIn];
 /// app 層訂閱 [states] 處理 token 失效導回登入。
+///
+/// 本類為 app 生命週期單例,不提供 dispose;`states` 無 replay,
+/// 訂閱前先讀 [state] 取得現值。
 class SessionManager implements TokenProvider {
   /// 以儲存、換發 gateway 與 logger 建立。
   SessionManager({
@@ -101,11 +104,25 @@ class SessionManager implements TokenProvider {
   }
 
   Future<bool> _doRefresh() async {
-    final tokens = _tokens;
-    if (tokens == null) {
+    final tokensAtStart = _tokens;
+    if (tokensAtStart == null) {
       return false;
     }
-    final result = await _gateway.refresh(tokens.refreshToken);
+    final Result<AuthTokens> result;
+    try {
+      result = await _gateway.refresh(tokensAtStart.refreshToken);
+    } on Object catch (e, st) {
+      // gateway 契約要求失敗回 Failure,但不可信任第三方實作一定遵守;
+      // 視同「非授權失敗」:保留 tokens、不登出。
+      _logger.error('token refresh gateway threw', error: e, stackTrace: st);
+      return false;
+    }
+    if (!identical(_tokens, tokensAtStart)) {
+      // refresh 進行期間發生 signOut/signIn(世代已變),
+      // 丟棄本次結果:不得寫入 store、不得再次 signOut,
+      // 避免登出後的 refresh 成功把舊 tokens「復活」。
+      return false;
+    }
     return result.fold(
       onSuccess: (next) async {
         await _store.write(accessTokenKey, next.accessToken);
@@ -114,8 +131,15 @@ class SessionManager implements TokenProvider {
         return true;
       },
       onFailure: (exception) async {
-        _logger.warning('token refresh failed: $exception');
-        await signOut();
+        if (exception is UnauthorizedException) {
+          // refresh token 本身失效,唯一真正需要登出的情境。
+          _logger.warning('token refresh unauthorized: $exception');
+          await signOut();
+          return false;
+        }
+        // Connectivity/Server/… 等暫時性失敗:斷網不得登出,保留 tokens
+        // 讓下次連線恢復後仍可重試。
+        _logger.warning('token refresh failed (tokens kept): $exception');
         return false;
       },
     );

@@ -9,7 +9,7 @@ void main() {
   late InMemorySecureStore store;
   late FakeLogger logger;
 
-  SessionManager build(FakeTokenRefreshGateway gateway) =>
+  SessionManager build(TokenRefreshGateway gateway) =>
       SessionManager(store: store, gateway: gateway, logger: logger);
 
   setUp(() {
@@ -17,7 +17,7 @@ void main() {
     logger = FakeLogger();
   });
 
-  Future<SessionManager> signedIn(FakeTokenRefreshGateway gateway) async {
+  Future<SessionManager> signedIn(TokenRefreshGateway gateway) async {
     final manager = build(gateway);
     await manager.signIn(
       const AuthTokens(accessToken: 'a0', refreshToken: 'r0'),
@@ -86,4 +86,47 @@ void main() {
     expect(await manager.refreshTokens(), isTrue);
     expect(gateway.callCount, 2);
   });
+
+  test('Connectivity 失敗不登出,保留 tokens', () async {
+    final gateway = FakeTokenRefreshGateway(
+      result: const Result.failure(ConnectivityException()),
+    );
+    final manager = await signedIn(gateway);
+    expect(await manager.refreshTokens(), isFalse);
+    expect(manager.state, isA<SessionAuthenticated>());
+    expect(store.values[SessionManager.accessTokenKey], 'a0');
+    expect(store.values[SessionManager.refreshTokenKey], 'r0');
+    expect(await manager.currentAccessToken(), 'a0');
+  });
+
+  test('gateway throw 不登出,保留 tokens', () async {
+    final manager = await signedIn(_ThrowingGateway());
+    expect(await manager.refreshTokens(), isFalse);
+    expect(manager.state, isA<SessionAuthenticated>());
+    expect(store.values[SessionManager.accessTokenKey], 'a0');
+    expect(await manager.currentAccessToken(), 'a0');
+  });
+
+  test('signOut 競態:refresh 中途登出,結果不得復活 tokens', () async {
+    final gateway = FakeTokenRefreshGateway(
+      result: const Result.success(
+        AuthTokens(accessToken: 'a1', refreshToken: 'r1'),
+      ),
+      delay: const Duration(milliseconds: 50),
+    );
+    final manager = await signedIn(gateway);
+    final refreshFuture = manager.refreshTokens();
+    await manager.signOut();
+    expect(await refreshFuture, isFalse);
+    expect(manager.state, isA<SessionUnauthenticated>());
+    expect(store.values, isEmpty);
+    expect(await manager.currentAccessToken(), isNull);
+  });
+}
+
+class _ThrowingGateway implements TokenRefreshGateway {
+  @override
+  Future<Result<AuthTokens>> refresh(String refreshToken) async {
+    throw Exception('boom');
+  }
 }

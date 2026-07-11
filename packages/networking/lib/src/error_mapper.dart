@@ -8,6 +8,9 @@ import 'package:foundation/foundation.dart';
 ///
 /// dio 5.10 新增的 transformTimeout 視為 timeout 家族,歸
 /// ConnectivityException(controller 裁定,spec §2.4 轉換表未列)。
+///
+/// badCertificate 歸 ConnectivityException(controller 裁定:對呼叫端
+/// 等同網路層不可用;spec §2.4 未列)。
 AppException mapDioException(DioException exception) {
   final stackTrace = exception.stackTrace;
   switch (exception.type) {

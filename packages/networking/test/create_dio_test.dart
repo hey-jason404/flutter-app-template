@@ -2,8 +2,6 @@ import 'package:networking/networking.dart';
 import 'package:networking/testing.dart';
 import 'package:test/test.dart';
 
-import 'support/scripted_adapter.dart';
-
 void main() {
   test('createDio 套用 config 並掛上 AuthInterceptor', () async {
     final adapter = ScriptedAdapter([

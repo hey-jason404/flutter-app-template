@@ -3,8 +3,6 @@ import 'package:networking/networking.dart';
 import 'package:networking/testing.dart';
 import 'package:test/test.dart';
 
-import 'support/scripted_adapter.dart';
-
 ({Dio dio, ScriptedAdapter adapter}) _harness({
   required List<ResponseBody Function(RequestOptions)> script,
   required TokenProvider tokenProvider,
@@ -95,5 +93,48 @@ void main() {
     await expectLater(h.dio.get<dynamic>('/me'), throwsA(isA<DioException>()));
     expect(h.adapter.seen, hasLength(2));
     expect(provider.refreshCallCount, 1);
+  });
+
+  test('401 但 token 已被他人換新 → 不打 refresh,直接以新 token 重試成功', () async {
+    final provider = FakeTokenProvider(accessToken: 'old');
+    final h = _harness(
+      script: [
+        (_) {
+          // 模擬併發的另一個請求在此期間已完成 refresh。
+          provider.accessToken = 'new';
+          return jsonResponse(401, '{}');
+        },
+        (_) => jsonResponse(200, '{"ok":true}'),
+      ],
+      tokenProvider: provider,
+    );
+    final res = await h.dio.get<dynamic>('/me');
+    expect(res.statusCode, 200);
+    expect(provider.refreshCallCount, 0);
+    expect(h.adapter.seen, hasLength(2));
+    expect(h.adapter.seen[1].headers['Authorization'], 'Bearer new');
+  });
+
+  test('refresh 成功但新 token 為 null → 不重試、原 401 傳遞', () async {
+    final provider = FakeTokenProvider(
+      accessToken: 'old',
+      refreshResult: true,
+      clearTokenOnRefresh: true,
+    );
+    final h = _harness(
+      script: [(_) => jsonResponse(401, '{}')],
+      tokenProvider: provider,
+    );
+    await expectLater(
+      h.dio.get<dynamic>('/me'),
+      throwsA(
+        isA<DioException>().having(
+          (e) => e.response?.statusCode,
+          'statusCode',
+          401,
+        ),
+      ),
+    );
+    expect(h.adapter.seen, hasLength(1));
   });
 }

@@ -41,12 +41,33 @@ class AuthInterceptor extends QueuedInterceptor {
       handler.next(err);
       return;
     }
-    final refreshed = await _tokenProvider.refreshTokens();
-    if (!refreshed) {
+    final currentToken = await _tokenProvider.currentAccessToken();
+    if (currentToken == null) {
       handler.next(err);
       return;
     }
-    final token = await _tokenProvider.currentAccessToken();
+    String token;
+    final failedAuthHeader = options.headers['Authorization'];
+    if (failedAuthHeader != 'Bearer $currentToken') {
+      // 失敗請求所帶的 token 已與現行 token 不同:代表併發的另一個
+      // 請求期間已完成 refresh,直接沿用現行 token 重試,
+      // 不再重覆呼叫 refreshTokens()(避免序列化 N 次 refresh)。
+      token = currentToken;
+    } else {
+      final refreshed = await _tokenProvider.refreshTokens();
+      if (!refreshed) {
+        handler.next(err);
+        return;
+      }
+      final refreshedToken = await _tokenProvider.currentAccessToken();
+      if (refreshedToken == null) {
+        // refresh 回報成功但拿不到新 token:不可送出 `Bearer null`,
+        // 視同重試失敗,原錯誤往下傳。
+        handler.next(err);
+        return;
+      }
+      token = refreshedToken;
+    }
     options.extra[_retriedKey] = true;
     options.headers['Authorization'] = 'Bearer $token';
     try {

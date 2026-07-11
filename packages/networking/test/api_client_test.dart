@@ -1,9 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:foundation/foundation.dart';
 import 'package:networking/networking.dart';
+import 'package:networking/testing.dart';
 import 'package:test/test.dart';
-
-import 'support/scripted_adapter.dart';
 
 ApiClient _client(List<ResponseBody Function(RequestOptions)> script) {
   final dio = Dio(BaseOptions(baseUrl: 'https://api.test'))
