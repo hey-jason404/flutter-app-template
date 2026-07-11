@@ -1,3 +1,21 @@
+/// App 於前景時收到的推播內容。
+///
+/// 呈現方式(in-app banner、本地通知、靜默處理...)由專案決定；
+/// 模板不預綁 `flutter_local_notifications` 等呈現層套件。
+class PushMessage {
+  /// 建立訊息。
+  const PushMessage({this.title, this.body, this.data = const {}});
+
+  /// 通知標題;無 notification payload 時為 null。
+  final String? title;
+
+  /// 通知內文;無 notification payload 時為 null。
+  final String? body;
+
+  /// 完整 data payload。
+  final Map<String, dynamic> data;
+}
+
 /// 使用者點擊推播的事件。
 class PushTapEvent {
   /// 建立事件。
@@ -28,4 +46,8 @@ abstract interface class PushNotifications {
   /// 冷啟動點擊:app 由推播點擊啟動時的事件;無則 null。
   /// app 應於首幀後檢查一次並轉路由。
   Future<PushTapEvent?> initialTap();
+
+  /// App 於前景時收到的訊息;呈現方式由專案決定——Android 前景不會
+  /// 自動顯示系統通知,iOS 前景亦需專案自行決定是否呈現。
+  Stream<PushMessage> get foregroundMessages;
 }

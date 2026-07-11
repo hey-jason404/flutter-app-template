@@ -9,9 +9,16 @@ PushTapEvent _toTapEvent(RemoteMessage message) {
   );
 }
 
+PushMessage _toPushMessage(RemoteMessage message) => PushMessage(
+  title: message.notification?.title,
+  body: message.notification?.body,
+  data: message.data,
+);
+
 /// [PushNotifications] 的 FCM 實作。
 ///
-/// openedMessages 由 app 傳入 `FirebaseMessaging.onMessageOpenedApp`
+/// openedMessages 由 app 傳入 `FirebaseMessaging.onMessageOpenedApp`、
+/// foregroundRemoteMessages 由 app 傳入 `FirebaseMessaging.onMessage`
 /// (static stream 無法注入替身,故由組裝層提供)。
 class FcmPushNotifications implements PushNotifications {
   /// 以注入的 messaging 實例與事件來源建立。
@@ -19,15 +26,18 @@ class FcmPushNotifications implements PushNotifications {
     required FirebaseMessaging messaging,
     required Stream<RemoteMessage> openedMessages,
     required Future<RemoteMessage?> Function() getInitialMessage,
+    required Stream<RemoteMessage> foregroundRemoteMessages,
     Stream<String>? tokenRefreshes,
   }) : _messaging = messaging,
        _openedMessages = openedMessages,
        _getInitialMessage = getInitialMessage,
+       _foregroundRemoteMessages = foregroundRemoteMessages,
        _tokenRefreshes = tokenRefreshes;
 
   final FirebaseMessaging _messaging;
   final Stream<RemoteMessage> _openedMessages;
   final Future<RemoteMessage?> Function() _getInitialMessage;
+  final Stream<RemoteMessage> _foregroundRemoteMessages;
   final Stream<String>? _tokenRefreshes;
 
   @override
@@ -52,4 +62,8 @@ class FcmPushNotifications implements PushNotifications {
     final message = await _getInitialMessage();
     return message == null ? null : _toTapEvent(message);
   }
+
+  @override
+  Stream<PushMessage> get foregroundMessages =>
+      _foregroundRemoteMessages.map(_toPushMessage);
 }

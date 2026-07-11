@@ -41,4 +41,7 @@ class DisabledPushNotifications implements PushNotifications {
 
   @override
   Future<PushTapEvent?> initialTap() async => null;
+
+  @override
+  Stream<PushMessage> get foregroundMessages => const Stream.empty();
 }
