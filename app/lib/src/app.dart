@@ -1,0 +1,77 @@
+import 'dart:async';
+
+import 'package:app/src/router/app_router.dart';
+import 'package:app/src/router/session_refresh_listenable.dart';
+import 'package:design_system/design_system.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:localization/localization.dart';
+import 'package:push_notifications/push_notifications.dart';
+import 'package:session/session.dart';
+
+/// App 根 widget:組裝 router、主題、多語系,並處理推播點擊轉路由(spec §5.3)。
+///
+/// 推播轉路由只在此處理一次:
+/// - [PushNotifications.taps] 的每個事件,`routePath` 非 null 時導向該路由。
+/// - 首幀後檢查 [PushNotifications.initialTap]（冷啟動點擊），同樣導向。
+/// - 兩者最終都經過 [buildRouter] 的登入守衛評估,未登入會被導回 login。
+class App extends StatefulWidget {
+  /// 建立 app;[gi] 為已完成組裝的 DI 容器。
+  const App({required this.gi, super.key});
+
+  /// DI 容器。
+  final GetIt gi;
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  late final GoRouter _router;
+  late final SessionRefreshListenable _refreshListenable;
+  late final StreamSubscription<PushTapEvent> _tapSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    final session = widget.gi<SessionManager>();
+    _refreshListenable = SessionRefreshListenable(session.states);
+    _router = buildRouter(session, refreshListenable: _refreshListenable);
+
+    final push = widget.gi<PushNotifications>();
+    _tapSubscription = push.taps.listen((event) {
+      final routePath = event.routePath;
+      if (routePath != null) {
+        _router.go(routePath);
+      }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final initialTap = await push.initialTap();
+      final routePath = initialTap?.routePath;
+      if (routePath != null) {
+        _router.go(routePath);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    unawaited(_tapSubscription.cancel());
+    _router.dispose();
+    _refreshListenable.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routerConfig: _router,
+      theme: buildAppTheme(brightness: Brightness.light),
+      darkTheme: buildAppTheme(brightness: Brightness.dark),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+    );
+  }
+}

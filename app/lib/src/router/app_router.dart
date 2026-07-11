@@ -1,5 +1,7 @@
 import 'package:app/src/pages/placeholder_pages.dart';
 import 'package:app/src/router/session_refresh_listenable.dart';
+import 'package:app/src/shell/app_shell.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigation/navigation.dart';
 import 'package:session/session.dart';
@@ -9,10 +11,16 @@ import 'package:session/session.dart';
 /// 未登入且目標非 login → 導向 login;已登入且目標為 login → 導向 home;
 /// 其餘不重導向。`refreshListenable` 讓 [SessionManager.states] 的每次事件
 /// 觸發 go_router 重新評估 redirect(如 token 失效自動導回登入)。
-GoRouter buildRouter(SessionManager session) {
+///
+/// 已登入區域(目前僅 home)包在 [ShellRoute] 內套用 [AppShell];
+/// login 留在 shell 外(未登入不應看到底部導覽列)。
+/// [refreshListenable] 可由呼叫端注入以掌控其生命週期(見 `App`);
+/// 未提供時內部建立一份供獨立使用(如既有 router 測試)。
+GoRouter buildRouter(SessionManager session, {Listenable? refreshListenable}) {
   return GoRouter(
     initialLocation: RoutePaths.home,
-    refreshListenable: SessionRefreshListenable(session.states),
+    refreshListenable:
+        refreshListenable ?? SessionRefreshListenable(session.states),
     redirect: (context, state) {
       final loggedIn = session.state is SessionAuthenticated;
       final goingToLogin = state.matchedLocation == RoutePaths.login;
@@ -29,11 +37,16 @@ GoRouter buildRouter(SessionManager session) {
         path: RoutePaths.login,
         builder: (context, state) => const PlaceholderLoginPage(),
       ),
-      GoRoute(
-        path: RoutePaths.home,
-        builder: (context, state) => const PlaceholderHomePage(),
+      ShellRoute(
+        builder: (context, state, child) => AppShell(child: child),
+        routes: [
+          GoRoute(
+            path: RoutePaths.home,
+            builder: (context, state) => const PlaceholderHomePage(),
+          ),
+          // {{feature-registry}}
+        ],
       ),
-      // {{feature-registry}}
     ],
   );
 }

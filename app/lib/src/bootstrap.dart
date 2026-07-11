@@ -1,3 +1,4 @@
+import 'package:app/src/app.dart';
 import 'package:app/src/config/app_config.dart';
 import 'package:app/src/di/compose_dependencies.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -55,5 +56,5 @@ Future<void> bootstrap(AppConfig config) async {
     );
   }
   await gi<SessionManager>().restore(); // 4c
-  runApp(const Placeholder()); // 5 // Task 6 換 App
+  runApp(App(gi: gi)); // 5
 }
