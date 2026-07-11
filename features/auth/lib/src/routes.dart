@@ -4,5 +4,5 @@ import 'package:navigation/navigation.dart';
 
 /// auth feature 對外提供的路由(供 app 路由表以 `{{feature-registry}}` 插入)。
 List<GoRoute> authRoutes() => [
-  GoRoute(path: RoutePaths.login, builder: (_, __) => const LoginPage()),
+  GoRoute(path: RoutePaths.login, builder: (_, _) => const LoginPage()),
 ];
