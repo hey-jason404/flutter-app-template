@@ -173,6 +173,24 @@ Future<void> bootstrap(AppConfig config) async {
 | token 失效登出 | [`packages/session/lib/src/session_manager.dart`](../packages/session/lib/src/session_manager.dart) 的 `_doRefresh()` 呼叫 `signOut()`(清除本地 tokens、發布 `SessionUnauthenticated`)+ 上列 `app_router.dart` 的 `redirect` 對該狀態反應 | refresh 回傳 `UnauthorizedException` 時才真正登出(`_doRefresh` 內以 `exception is UnauthorizedException` 判斷);其餘暫時性失敗(斷網、5xx)保留 tokens,不登出。清資料的唯一處是 `SessionManager`,「導回登入」的唯一處是 router 的 `redirect`——兩者透過 `states` stream 串接,app 層不再另外訂閱。 |
 | 推播點擊轉路由 | [`app/lib/src/app.dart`](../app/lib/src/app.dart) 的 `_AppState.initState()` | 訂閱 `PushNotifications.taps`,`routePath` 非 null 時 `_router.go(routePath)`;另於首幀後呼叫 `PushNotifications.initialTap()` 處理冷啟動點擊。兩者最終都經過上列 router 的登入守衛評估。 |
 
+### 3.4 啟動 gate(強制更新/維護模式)歸屬(規範性指引,規格 §10.27)
+
+模板不預建強制更新或維護模式功能,但若專案要加,歸屬定為:
+
+- **檢查位置**:`bootstrap.dart` 第 4 步(`await` 必要初始化,見 §3.2)之後、
+  `runApp()` 之前——與 Firebase init、`SessionManager.restore()` 同一批
+  「啟動期一次性遠端檢查」,結果(如最低版本號、維護旗標)存進一個
+  supporting 狀態(例如另一個 app 生命週期單例或 `SessionManager` 旁的
+  獨立 manager),供 router 讀取。
+- **攔截位置**:`app_router.dart` 的 `redirect`,置於登入守衛**之前**評估
+  (最高優先層)——強制更新/維護頁面必須攔在登入判斷之前,未登入使用者
+  也要被擋。與登入守衛共用同一個 `redirect` 函式、依序判斷,不建第二個
+  redirect 機制。
+- **為何模板不預建實作**:是否需要強制更新/維護模式、判斷依據(版本比對
+  API、feature flag 服務、遠端 config)因專案而異,模板無法代為決定介面
+  形狀;比照 [`add-a-native-capability.md`](how-to/add-a-native-capability.md)
+  的先例——只給規範性指引與唯一處歸屬,不出廠一組用不到的抽象。
+
 ## 4. 相關文件
 
 - 命名、Bloc 規範、測試規範等寫作慣例:[`conventions.md`](conventions.md)
