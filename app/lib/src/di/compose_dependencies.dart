@@ -95,6 +95,7 @@ Future<void> composeDependencies(
                 openedMessages: FirebaseMessaging.onMessageOpenedApp,
                 getInitialMessage:
                     () => FirebaseMessaging.instance.getInitialMessage(),
+                foregroundRemoteMessages: FirebaseMessaging.onMessage,
               )
               : const DisabledPushNotifications(),
     );

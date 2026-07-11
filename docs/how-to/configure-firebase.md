@@ -104,6 +104,11 @@ Firebase」或反過來,兩者獨立切換。
   `_AppState.initState()`——首幀後呼叫,結果與前景點擊
   (`taps` stream)最終都經過 router 的登入守衛評估(見
   [`architecture.md` §3.3](../architecture.md))。
+- 前景收到的推播由 `PushNotifications.foregroundMessages` stream 暴露
+  (對應 `FirebaseMessaging.onMessage`);Android 前景不會自動顯示系統通知,
+  是否呈現(banner/本地通知/靜默)由專案自行決定。注意 iOS 預設**會**在
+  前景顯示系統橫幅——若專案改用 in-app 呈現,需另呼叫
+  `setForegroundNotificationPresentationOptions` 關閉原生橫幅,避免雙重顯示。
 - 實體裝置才收得到 APNs 推播;iOS 模擬器需 Xcode 15+ 且僅支援本機模擬推播
   (不支援真正的遠端推播測試)。
 
