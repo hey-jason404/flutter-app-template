@@ -298,3 +298,11 @@ how-to 以示範 feature 的實際檔案為範例,文件與代碼互相印證。
 8. check.sh 追加 pubspec 依賴稽核(計畫 2 或 6):`depend_on_referenced_packages` 只擋未宣告的 import,擋不住「宣告了被禁止的依賴」;需以腳本檢查 features/* 的 dependencies 不含 features/*、packages/* 不含 features/* 與 app,使 §2.2 四條規則全數機器可驗證。
 9. `Result.guard`(try/catch → Result 轉換 helper)待計畫 2 依 repository 實際樣板量決定是否補進 foundation,不預先鍍金。
 10. `rename_project.dart` 替換清單需包含 workspace 根 pubspec 的 `name: workspace_root`。
+
+以下為計畫 2 最終全分支審查後定案的追加事項:
+
+11. 計畫 4(app 組裝層)須擴充 `createDio`:(a) 可追加額外 interceptors(observability 的 logging 需要掛點);(b) 決定 retryClient 是否共掛 logging(否則重試請求從 log 消失);(c) 提供「無 AuthInterceptor 的 plain client」工廠給 `TokenRefreshGateway` 實作使用,把「gateway 不得走含攔截器 client」從文件約束升級為結構性保證。
+12. 計畫 4/5 視需要補 `ApiClient` 的 `patch` 方法與 per-request headers / `CancelToken` 傳入口(目前刻意未做,遇到實際需求再加)。
+13. 計畫 6 conventions.md 需記載:(a) 請求取消(`DioExceptionType.cancel`)映射為 `UnknownException`,bloc 於 dispose-cancel 情境應忽略此錯誤;(b) package 內部 import 採 `package:x/src/...` 絕對路徑為 house style;(c) `SessionManager` 為 app 生命週期單例、`states` 無 replay 的訂閱模式。
+14. §10 第 8 條的 check.sh pubspec 依賴稽核**定於計畫 6** 落地(計畫 2 未做,勿失落)。
+15. 已知邊角(有意識接受):AuthInterceptor 對「無 Authorization header 卻收到 401」的請求會以現行 token 重試一次而不觸發 refresh;`ApiException` 在 statusCode 缺失時 code 為 '0'。
