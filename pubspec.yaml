@@ -8,6 +8,7 @@ environment:
 workspace:
   - packages/design_system
   - packages/foundation
+  - packages/localization
   - packages/navigation
   - packages/networking
   - packages/persistence

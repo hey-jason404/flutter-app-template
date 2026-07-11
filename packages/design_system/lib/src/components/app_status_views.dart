@@ -21,9 +21,9 @@ class AppErrorView extends StatelessWidget {
     this.retryLabel,
     super.key,
   }) : assert(
-          onRetry == null || retryLabel != null,
-          'onRetry 存在時必須提供 retryLabel',
-        );
+         onRetry == null || retryLabel != null,
+         'onRetry 存在時必須提供 retryLabel',
+       );
 
   /// 錯誤訊息。
   final String message;

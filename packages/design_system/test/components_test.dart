@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Widget _wrap(Widget child) => MaterialApp(
-      theme: buildAppTheme(brightness: Brightness.light),
-      home: child,
-    );
+  theme: buildAppTheme(brightness: Brightness.light),
+  home: child,
+);
 
 void main() {
   testWidgets('AppPageScaffold 顯示標題與 body', (tester) async {
@@ -65,9 +65,7 @@ void main() {
       _wrap(const Scaffold(body: AppEmptyView(message: 'empty'))),
     );
     expect(find.text('empty'), findsOneWidget);
-    await tester.pumpWidget(
-      _wrap(const Scaffold(body: AppLoadingIndicator())),
-    );
+    await tester.pumpWidget(_wrap(const Scaffold(body: AppLoadingIndicator())));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }

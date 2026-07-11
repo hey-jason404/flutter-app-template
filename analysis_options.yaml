@@ -7,3 +7,5 @@ analyzer:
     strict-raw-types: true
   errors:
     depend_on_referenced_packages: error
+  exclude:
+    - "**/src/generated/**"

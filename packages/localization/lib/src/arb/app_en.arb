@@ -1,0 +1,8 @@
+{
+  "@@locale": "en",
+  "commonRetry": "Retry",
+  "commonCancel": "Cancel",
+  "commonConfirm": "Confirm",
+  "commonLoading": "Loading…",
+  "commonErrorGeneric": "Something went wrong. Please try again."
+}

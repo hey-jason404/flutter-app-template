@@ -1,0 +1,8 @@
+{
+  "@@locale": "zh",
+  "commonRetry": "重試",
+  "commonCancel": "取消",
+  "commonConfirm": "確認",
+  "commonLoading": "載入中…",
+  "commonErrorGeneric": "發生錯誤,請再試一次。"
+}
