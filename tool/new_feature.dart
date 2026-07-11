@@ -181,7 +181,7 @@ publish_to: none
 resolution: workspace
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.12.0
 
 dependencies:
   bloc: ^9.0.0
@@ -190,8 +190,8 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.0.0
   foundation: any
-  get_it: ^8.0.0
-  go_router: ^14.6.0
+  get_it: ^9.0.0
+  go_router: ^17.0.0
   localization: any
   navigation: any
   networking: any
