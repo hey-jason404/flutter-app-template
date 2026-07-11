@@ -1,0 +1,258 @@
+# 開發慣例
+
+本文件記錄「怎麼寫」的規則:命名與檔案位置、Bloc 六鐵律、錯誤模型、usecase 準則、DI 規範、測試規範,
+以及規格 §10 歷次審查定案的判準。權威來源為
+[`docs/superpowers/specs/2026-07-11-flutter-app-template-design.md`](superpowers/specs/2026-07-11-flutter-app-template-design.md)(以下簡稱「規格」)。
+所有程式碼片段皆節錄自現存檔案並標註路徑;架構層級規則見 [`architecture.md`](architecture.md)。
+
+## 1. Feature 三層形狀
+
+所有 feature 形狀一致(規格 §4.1)。以 [`features/home`](../features/home) 為導覽範例,實際檔案樹:
+
+```
+features/home/
+├── pubspec.yaml
+├── lib/
+│   ├── home.dart                          # barrel
+│   └── src/
+│       ├── di.dart                        # registerHomeFeature(GetIt gi)
+│       ├── routes.dart                    # homeRoutes()
+│       ├── data/
+│       │   ├── dtos/
+│       │   │   └── item_dto.dart
+│       │   └── repositories/
+│       │       └── item_repository_impl.dart
+│       ├── domain/
+│       │   ├── entities/
+│       │   │   └── item.dart
+│       │   └── repositories/
+│       │       └── item_repository.dart
+│       └── presentation/
+│           ├── blocs/
+│           │   ├── item_detail/
+│           │   │   ├── item_detail_bloc.dart
+│           │   │   ├── item_detail_event.dart
+│           │   │   └── item_detail_state.dart
+│           │   └── item_list/
+│           │       ├── item_list_bloc.dart
+│           │       ├── item_list_event.dart
+│           │       └── item_list_state.dart
+│           └── pages/
+│               ├── home_page.dart
+│               └── item_detail_page.dart
+└── test/
+    ├── data/item_repository_impl_test.dart
+    └── presentation/
+        ├── home_pages_test.dart
+        ├── item_detail_bloc_test.dart
+        └── item_list_bloc_test.dart
+```
+
+注意 `features/home` 沒有 `data/sources/` 目錄——判準見 §6。`presentation/widgets/`(feature 私有元件)在此範例未用到,但規格 §4.1 保留該位置。
+
+層內依賴方向:`presentation → domain ← data`。presentation 不碰 DTO 與 data source;DTO 欄位變動的爆炸範圍止於 data 層。
+
+feature 對外只透過 barrel file(`lib/<name>.dart`)輸出;`lib/src/` 內一切私有(Dart 語言級保護,規格 §2.3)。例:[`features/home/lib/home.dart`](../features/home/lib/home.dart) 匯出 DI 註冊函式、路由建構函式與 presentation 型別供 `app` 的 DI/路由/`di_smoke_test` 取用,barrel 內註明「features 之間仍禁止互相依賴(pubspec 白名單擋住)」。
+
+跨 feature 導航用型別化 route 類別,路徑常數集中於 `navigation`,route 類別手寫 `location`(不採 go_router_builder)。例:[`packages/navigation/lib/src/route_paths.dart`](../packages/navigation/lib/src/route_paths.dart) 定義 `RoutePaths.homeItemDetail`,[`features/home/lib/src/routes.dart`](../features/home/lib/src/routes.dart) 內 `ItemDetailRoute` 組合出 `location`;`app` 的 `GoRoute(path:)` 與 feature 的 `context.go(ItemDetailRoute(id).location)` 取用同一份路徑常數。
+
+## 2. Bloc 六鐵律(規格 §4.2)
+
+1. 一律用 `Bloc`,不用 `Cubit`。
+2. State 用 Dart 3 `sealed class` 表達互斥狀態;UI 用 exhaustive `switch` 渲染——漏處理狀態是編譯錯誤。
+3. 命名:事件用「主詞+過去式動詞」(`LoginSubmitted`),不用命令式;狀態類別 `<情境><階段>`。
+4. Bloc 之間禁止互相引用;**feature 內**共享狀態下沉到 domain(repository 暴露 stream),各自訂閱——這與 §2.3 的「**跨 feature** 契約下沉到 `packages/`」是兩個不同 scope 的規則,不可混為一談。
+5. 錯誤處理單一路徑:repository 一律回傳 `Result<T, AppException>`(`foundation` 定義);禁止 bloc/UI 以 `try/catch` 接 raw exception。
+6. Bloc 檔案不 import Flutter,保持純 Dart。
+
+範例:[`features/home/lib/src/presentation/blocs/item_list/item_list_bloc.dart`](../features/home/lib/src/presentation/blocs/item_list/item_list_bloc.dart)——只 import `package:bloc/bloc.dart` 與 domain 型別,不 import Flutter:
+
+```dart
+class ItemListBloc extends Bloc<ItemListEvent, ItemListState> {
+  ItemListBloc({required ItemRepository repository})
+    : _repository = repository,
+      super(const ItemListLoading()) {
+    on<ItemListRequested>(_onItemListRequested);
+  }
+  ...
+  result.fold(
+    onSuccess: (items) => emit(ItemListLoaded(items)),
+    onFailure: (exception) => emit(ItemListError(exception)),
+  );
+}
+```
+
+### 2.1 switch/is 判準(規格 §10.23a):LoginPage vs HomePage 對照
+
+整頁三態(loading/success/error)渲染一律用 exhaustive `switch`;單一旗標或副作用(如 loading 中禁用按鈕、失敗時彈 SnackBar)允許用 `is` 檢查。
+
+- **HomePage(整頁三態 → exhaustive switch)**:[`features/home/lib/src/presentation/pages/home_page.dart`](../features/home/lib/src/presentation/pages/home_page.dart)
+
+  ```dart
+  return switch (state) {
+    ItemListLoading() => const AppLoadingIndicator(),
+    ItemListError() => AppErrorView(...),
+    ItemListLoaded(:final items) when items.isEmpty => AppEmptyView(...),
+    ItemListLoaded(:final items) => ListView.builder(...),
+  };
+  ```
+
+- **LoginPage(表單頁,狀態只影響單一旗標/副作用 → `is`)**:[`features/auth/lib/src/presentation/pages/login_page.dart`](../features/auth/lib/src/presentation/pages/login_page.dart)——頁面主體(表單)不隨狀態切換,只有按鈕 `loading` 旗標與失敗 SnackBar 是狀態驅動的局部效果:
+
+  ```dart
+  BlocListener<LoginBloc, LoginState>(
+    listener: (context, state) {
+      if (state is LoginFailure) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.authLoginFailed)),
+        );
+      }
+    },
+    ...
+  )
+  // 按鈕:
+  AppPrimaryButton(loading: state is LoginSubmitting, ...)
+  ```
+
+## 3. 錯誤模型(規格 §2.4)與轉換責任
+
+`AppException` 為 `foundation` 定義的 `sealed class`([`packages/foundation/lib/src/exceptions.dart`](../packages/foundation/lib/src/exceptions.dart)),子類清單定死,不允許各 feature 自創例外型別:
+
+| 子類 | 語意 | 主要來源 |
+|---|---|---|
+| `ConnectivityException` | 無網路、DNS 失敗、連線逾時 | networking |
+| `ServerException(statusCode)` | 5xx | networking |
+| `UnauthorizedException` | 401 / token 失效且 refresh 失敗 | networking(觸發 session 過期) |
+| `ApiException(code, message)` | 4xx 業務錯誤(後端錯誤碼) | networking |
+| `ParsingException` | JSON 解析 / DTO 轉換失敗 | data 層 |
+| `StorageException` | 本地儲存讀寫失敗 | persistence |
+| `NativeException(code)` | 原生能力呼叫失敗 | packages/native/* |
+| `UnknownException(cause)` | 以上皆非的兜底 | 各處 |
+
+轉換責任落在 [`packages/networking/lib/src/error_mapper.dart`](../packages/networking/lib/src/error_mapper.dart) 的 `mapDioException()`——把 `DioException` 依 `type` 與狀態碼收攏為上表對應子類:
+
+```dart
+switch (exception.type) {
+  case DioExceptionType.connectionTimeout:
+  case DioExceptionType.sendTimeout:
+  case DioExceptionType.receiveTimeout:
+  case DioExceptionType.connectionError:
+  case DioExceptionType.badCertificate:
+  case DioExceptionType.transformTimeout:
+    return ConnectivityException(cause: exception, stackTrace: stackTrace);
+  case DioExceptionType.badResponse:
+    return _mapBadResponse(exception, stackTrace);
+  case DioExceptionType.cancel:
+  case DioExceptionType.unknown:
+    return UnknownException(cause: exception, stackTrace: stackTrace);
+}
+```
+
+`_mapBadResponse` 內:401 → `UnauthorizedException`;5xx → `ServerException`;其餘依後端 envelope 的 `code`/`message` → `ApiException`(`statusCode` 缺失時 `code` 退回 `'$statusCode'`,即已知邊角,規格 §10 第 15 條)。`networking` 的攔截器負責產生前四類;data 層(DTO `fromJson`/轉換函式)只在轉換失敗時產生 `ParsingException`,見 [`packages/networking/lib/src/api_client.dart`](../packages/networking/lib/src/api_client.dart) 的 `_send()`——`parse()` 拋出的任何 `Object` 皆收攏為 `ParsingException`;`persistence` 產生 `StorageException`;`packages/native/*` 產生 `NativeException`。`data` 層之上(repository、bloc)只會看到 `AppException`,repository 一律回傳 `Result<T, AppException>`。
+
+## 4. usecase 選配準則(規格 §4.3,唯一允許的彈性)
+
+預設 bloc 直接呼叫 repository(見 `ItemListBloc`、`LoginBloc` 範例,皆未經 usecase)。僅兩種情況抽 usecase:
+
+- (a) 一個動作協調兩個以上 repository;
+- (b) 同一段業務規則被兩個以上 bloc 使用。
+
+準則外新增 usecase,code review 退回。本模板兩個示範 feature(`auth`、`home`)皆未觸發這兩個條件,因此 `domain/usecases/` 目錄未建立。
+
+## 5. DI 規範(規格 §4.4)
+
+- repository、data source 註冊 `lazySingleton`;bloc 一律 `factory`,跟隨頁面生命週期,不做全域 bloc。全域狀態(如 session 監聽)不住在 feature。
+- feature 的 `di.dart` 是唯一註冊點;`app` 只呼叫一行註冊函式;`di_smoke_test` 驗證全部可解析。
+
+範例:[`features/home/lib/src/di.dart`](../features/home/lib/src/di.dart)
+
+```dart
+void registerHomeFeature(GetIt gi) {
+  gi
+    ..registerLazySingleton<ItemRepository>(
+      () => ItemRepositoryImpl(gi<ApiClient>()),
+    )
+    ..registerFactory<ItemListBloc>(
+      () => ItemListBloc(repository: gi<ItemRepository>()),
+    )
+    ..registerFactory<ItemDetailBloc>(
+      () => ItemDetailBloc(repository: gi<ItemRepository>()),
+    );
+}
+```
+
+`app` 呼叫端:[`app/lib/src/di/compose_dependencies.dart`](../app/lib/src/di/compose_dependencies.dart) 末尾 `registerAuthFeature(gi); registerHomeFeature(gi);` 加上 `// {{feature-registry}}` 標記,供 `tool/new_feature.dart` 插入新 feature 的註冊呼叫。
+
+全域狀態的例外:`SessionManager` 不是 feature 註冊的一部分,而是 `app` 組裝層以 `registerLazySingleton<SessionManager>` 註冊的 app 生命週期單例(見 §9)。
+
+## 6. `sources/` 層判準(規格 §10.23c)
+
+demo repository 可省略 `data/sources/` 層——單一 remote 來源且無本地快取時,repository 可直呼 `ApiClient`;出現第二來源(如加入本地快取、多個 remote 端點)時才抽 `sources/`。
+
+現況兩個示範 feature 皆未建立 `sources/`,repository 直接持有 `ApiClient`:
+
+- [`features/home/lib/src/data/repositories/item_repository_impl.dart`](../features/home/lib/src/data/repositories/item_repository_impl.dart):`ItemRepositoryImpl(this._client)`,`_client` 型別為 `ApiClient`。
+- [`features/auth/lib/src/data/repositories/auth_repository_impl.dart`](../features/auth/lib/src/data/repositories/auth_repository_impl.dart):同樣直接持有 `ApiClient`。
+
+## 7. DTO 手寫判準(規格 §10.23d)
+
+freezed / codegen 使用準則(規格 §10 第 4 條定死):DTO 一律 `json_serializable`(欄位少不值 codegen 時可手寫 `fromJson`);entity 預設手寫,欄位多且需要 `copyWith` 時才用 freezed。
+
+範例:[`features/home/lib/src/data/dtos/item_dto.dart`](../features/home/lib/src/data/dtos/item_dto.dart) 手寫 `fromJson`(僅 3 個 `String` 欄位,不值得引入 codegen):
+
+```dart
+factory ItemDto.fromJson(Map<String, dynamic> json) => ItemDto(
+  id: json['id'] as String,
+  title: json['title'] as String,
+  description: json['description'] as String,
+);
+```
+
+缺欄位時 cast 失敗直接向外拋出,由 `ApiClient._send()` 收攏為 `ParsingException`(見 §3)。對應 entity [`features/home/lib/src/domain/entities/item.dart`](../features/home/lib/src/domain/entities/item.dart) 亦手寫,不使用 freezed。
+
+## 8. 測試規範
+
+### 8.1 規格 §3 四條
+
+1. 提供介面的 package 必須同時從 `lib/testing.dart` 匯出官方 fake;下游測試一律用官方 fake,禁止各自手寫 mock。例:[`packages/session/lib/testing.dart`](../packages/session/lib/testing.dart) 匯出 `FakeTokenRefreshGateway`;[`packages/foundation/lib/testing.dart`](../packages/foundation/lib/testing.dart) 匯出 `FakeLogger`。[`features/auth/test/presentation/login_page_test.dart`](../features/auth/test/presentation/login_page_test.dart) 即以 `InMemorySecureStore()`(`package:persistence/testing.dart`)+ `FakeTokenRefreshGateway()`(`package:session/testing.dart`)+ `FakeLogger()`(`package:foundation/testing.dart`)組裝真實 `SessionManager`,而非手寫 mock。
+2. 測試替身統一用 **mocktail**(無 code-gen)+ **bloc_test**。工具唯一化,不給選擇。例:`features/home/test/presentation/item_list_bloc_test.dart` 用 `class _MockItemRepository extends Mock implements ItemRepository {}` + `blocTest<ItemListBloc, ItemListState>(...)`。
+3. 完成的定義:bloc 事件→狀態轉換、repository 資料轉換與錯誤映射必須有測試;page 至少有 loading/success/error 三態渲染測試。golden、integration 為建議項。四個示範測試檔([`item_list_bloc_test.dart`](../features/home/test/presentation/item_list_bloc_test.dart)、[`item_detail_bloc_test.dart`](../features/home/test/presentation/item_detail_bloc_test.dart)、[`item_repository_impl_test.dart`](../features/home/test/data/item_repository_impl_test.dart)、[`home_pages_test.dart`](../features/home/test/presentation/home_pages_test.dart))即示範此完成度。
+4. `tool/new_feature.dart` 連同測試骨架一起產出(見 §12)。
+
+### 8.2 測試文案(規格 §10.23b)
+
+測試斷言文案走 `AppLocalizations` 的具體語系實例(如 `AppLocalizationsEn()`,見 [`packages/localization/lib/src/generated/app_localizations_en.dart`](../packages/localization/lib/src/generated/app_localizations_en.dart)),不硬編字串常數,避免文案改動時兩處失同步。現有示範測試(如 `home_pages_test.dart`)以英文預設語系直接斷言可讀文案字串(如 `'Something went wrong. Please try again.'`),對應 ARB key 為 `commonErrorGeneric`(見 [`packages/localization/lib/src/arb/app_en.arb`](../packages/localization/lib/src/arb/app_en.arb));新增測試時優先改走 `AppLocalizationsEn().commonErrorGeneric` 取代硬編字串。
+
+### 8.3 元件選取器(規格 §10.23e)
+
+widget 測試點擊/查找元件用 `find.byType(<公開元件型別>)`,不耦合內部實作(如不對 `FilledButton` 這類 `AppPrimaryButton` 的內部渲染細節做選取,改用 `design_system` 匯出的公開型別)。範例:[`app/test/app_flow_test.dart`](../app/test/app_flow_test.dart) 用 `find.byType(AppPrimaryButton)`(`AppPrimaryButton` 為 `design_system` 匯出的公開元件,見 [`packages/design_system/lib/src/components/app_primary_button.dart`](../packages/design_system/lib/src/components/app_primary_button.dart))點擊送出按鈕,而非耦合其內部 `FilledButton` 實作。
+
+## 9. §10.13 三項定案
+
+(a) **請求取消映射**:`error_mapper.dart` 把 `DioExceptionType.cancel` 映射為 `UnknownException`(見 §3 程式碼片段)。bloc 於 dispose-cancel 情境(如頁面關閉時仍有進行中請求被取消)應忽略此錯誤,不應顯示錯誤畫面或上報——這是消費端(bloc)的職責,`error_mapper.dart` 只負責產生正確的例外型別,不負責判斷「是否該忽略」。
+
+(b) **import house style**:package 內部一律用 `package:x/src/...` 絕對路徑,不用相對路徑。範例遍布全庫,如 [`features/home/lib/src/presentation/pages/home_page.dart`](../features/home/lib/src/presentation/pages/home_page.dart) 內 `import 'package:home/src/presentation/blocs/item_list/item_list_bloc.dart';`。
+
+(c) **`SessionManager` 生命週期**:app 生命週期單例(由 `compose_dependencies.dart` 以 `registerLazySingleton<SessionManager>` 註冊,不提供 dispose),`states` 為無 replay 的 `StreamController<SessionState>.broadcast(sync: true)`(見 [`packages/session/lib/src/session_manager.dart`](../packages/session/lib/src/session_manager.dart))。訂閱前必須先讀 `state` getter 取得現值,不可假設訂閱後會立刻收到目前狀態。
+
+## 10. 例外斷言與 ignore 註解
+
+- **例外相等策略(規格 §10 第 7 條)**:`AppException` 不實作 `==`/`hashCode`;測試斷言一律用 `isA<ServerException>()` 類 matcher,不做例外實例的相等比較。範例:`features/home/test/presentation/item_list_bloc_test.dart` 的 `isA<ItemListError>().having((s) => s.exception, ...)` 模式;`packages/networking/test/error_mapper_test.dart` 大量使用 `isA<ConnectivityException>()` 等。
+- **`ignore` 註解格式**:每處逐行 `// ignore: 規則 -- 原因`,`tool/check.sh` 第 2 步以 grep 擋無 ` -- 原因` 的 ignore(生成檔 `**/src/generated/**` 豁免,與根 `analysis_options.yaml` 的 `analyzer.exclude` 對齊)。範例:[`packages/session/lib/src/token_refresh_gateway.dart`](../packages/session/lib/src/token_refresh_gateway.dart) 的 `// ignore: one_member_abstracts -- 契約刻意單方法,依 spec §2.3 由 app 提供實作`;[`app/lib/src/bootstrap.dart`](../app/lib/src/bootstrap.dart) 的 `// ignore: discarded_futures -- 上報為 fire-and-forget，不阻塞錯誤呈現流程`。
+
+## 11. 產生器工作流:`new_feature` 之後該做什麼
+
+`dart run tool/new_feature.dart <name>` 依規格 §6.3 產出完整骨架後,自動完成:
+
+1. 產生完整 feature 骨架(pubspec、barrel、`di.dart`、`routes.dart`、三層目錄、一組會動的範例 bloc + 頁面 + 測試)。
+2. 把新 package 加進 workspace 根 `pubspec.yaml`。
+3. 在 `app` 的 DI(`compose_dependencies.dart` 的 `// {{feature-registry}}`)與路由(`app_router.dart` 的 `// {{feature-registry}}`)標記區塊插入接線。
+4. 在 `navigation` package 的 `// {{route-paths}}` 標記區塊插入路徑常數與 route 類別範本。
+5. 在 `app/test/di_smoke_test.dart` 的 `// {{feature-registry}}` 標記區塊插入新 feature 註冊型別的解析呼叫。
+
+產生器之後仍需人工完成的事(不屬產生器範圍):依實際 API 修改 DTO/entity/repository 邏輯;在 `localization` 的 ARB 加入以 feature 前綴命名的文案 key(如 `home*`、`auth*`,見 [`packages/localization/lib/src/arb/app_en.arb`](../packages/localization/lib/src/arb/app_en.arb));視 §4/§6 判準決定是否需要 `usecases/` 或 `sources/`;跑一次 `tool/check.sh` 確認 CI 同構檢查全過(含 §11 的 l10n 漂移檢查)。
+
+## 12. 相關文件
+
+- workspace 拓撲、依賴方向與關鍵鏈路:[`architecture.md`](architecture.md)
+- 架構決策紀錄:[`adr/`](adr/)
