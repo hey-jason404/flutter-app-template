@@ -1,0 +1,25 @@
+import 'package:auth/src/data/dtos/login_response_dto.dart';
+import 'package:auth/src/domain/repositories/auth_repository.dart';
+import 'package:foundation/foundation.dart';
+import 'package:networking/networking.dart';
+import 'package:session/session.dart';
+
+/// [AuthRepository] 的 HTTP 實作。
+class AuthRepositoryImpl implements AuthRepository {
+  /// 以 [ApiClient] 建立；client 需含 AuthInterceptor（一般登入流程）。
+  AuthRepositoryImpl(this._client);
+
+  final ApiClient _client;
+
+  @override
+  Future<Result<AuthTokens>> login({
+    required String email,
+    required String password,
+  }) => _client.post<AuthTokens>(
+    '/auth/login',
+    body: {'email': email, 'password': password},
+    parse:
+        (data) =>
+            LoginResponseDto.fromJson(data as Map<String, dynamic>).toTokens(),
+  );
+}

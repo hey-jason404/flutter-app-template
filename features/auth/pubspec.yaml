@@ -1,0 +1,25 @@
+name: auth
+description: 登入功能:domain/data 層、AuthTokenRefreshGateway、路由與 DI 註冊。
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  design_system: any
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.0.0
+  foundation: any
+  get_it: ^8.0.0
+  localization: any
+  navigation: any
+  networking: any
+  session: any
+
+dev_dependencies:
+  bloc_test: ^10.0.0
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
