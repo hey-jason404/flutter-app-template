@@ -1,6 +1,6 @@
-# 護欄相關路徑需 @hey-jason404 核可才能合併(見 docs/conventions.md §分支與 PR)。
-/tool/                @hey-jason404
-/analysis_options.yaml @hey-jason404
-/.github/              @hey-jason404
-/docs/adr/             @hey-jason404
-/.fvmrc                @hey-jason404
+# 護欄相關路徑需 @jasonw-dev 核可才能合併(見 docs/conventions.md §分支與 PR)。
+/tool/                @jasonw-dev
+/analysis_options.yaml @jasonw-dev
+/.github/              @jasonw-dev
+/docs/adr/             @jasonw-dev
+/.fvmrc                @jasonw-dev
